@@ -1,0 +1,12 @@
+## Interface: 30300
+## Title: MiscMenu
+## Notes: Profession Menu For Ascension
+## Author: Anch
+## SavedVariables: MiscMenu
+## SavedVariablesPerCharacter: MiscMenuDB
+## X-Category: Profession
+## X-OptionsFrame: MiscMenuOptionsFrame
+## DefaultState: enabled
+## Version: 1.7
+
+embeds.xml

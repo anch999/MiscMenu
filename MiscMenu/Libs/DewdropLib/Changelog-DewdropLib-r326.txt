@@ -1,0 +1,15 @@
+------------------------------------------------------------------------
+r326 | oscarucb | 2013-10-12 19:33:25 +0000 (Sat, 12 Oct 2013) | 2 lines
+Changed paths:
+   M /trunk/Dewdrop-2.0/Dewdrop-2.0.lua
+
+fix menu width auto-resizing to work correctly for long items
+
+------------------------------------------------------------------------
+r325 | oscarucb | 2013-02-23 05:42:20 +0000 (Sat, 23 Feb 2013) | 2 lines
+Changed paths:
+   M /trunk/Dewdrop-2.0/Dewdrop-2.0.lua
+
+tweak to allow loading in combat
+
+------------------------------------------------------------------------
