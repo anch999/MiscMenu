@@ -19,5 +19,7 @@
 
 <Script file="MiscMenu.lua"/>
 <Script file="MiscMenuOptions.lua"/>
-
+<Script file="MiscMenuUI.lua"/>
+<Script file="Minimap.lua"/>
+<Script file="Utils.lua"/>
 </Ui>

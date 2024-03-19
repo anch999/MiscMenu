@@ -25,7 +25,7 @@ if oldminor < 3 then
 		attributestorage[self][key] = value
 		local name = namestorage[self]
 		if not name then return end
-		callbacks:Fire("LibDataBroker_AttributeChanged", name, key, value, self)
+		callbacks:Fire("!", name, key, value, self)
 		callbacks:Fire("LibDataBroker_AttributeChanged_"..name, name, key, value, self)
 		callbacks:Fire("LibDataBroker_AttributeChanged_"..name.."_"..key, name, key, value, self)
 		callbacks:Fire("LibDataBroker_AttributeChanged__"..key, name, key, value, self)

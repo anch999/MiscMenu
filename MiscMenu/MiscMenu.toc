@@ -2,9 +2,9 @@
 ## Title: MiscMenu
 ## Notes: Profession Menu For Ascension
 ## Author: Anch
-## SavedVariables: MiscMenu
-## SavedVariablesPerCharacter: MiscMenuDB
-## X-Category: Profession
+## SavedVariables: MiscMenuDB
+## SavedVariablesPerCharacter: MiscMenuCharDB
+## X-Category: UnitFrame
 ## X-OptionsFrame: MiscMenuOptionsFrame
 ## DefaultState: enabled
 ## Version: 1.7

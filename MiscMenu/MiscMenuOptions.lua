@@ -1,4 +1,6 @@
-function Vanity_Menu:Options_Toggle()
+local MM = LibStub("AceAddon-3.0"):GetAddon("MiscMenu")
+
+function MM:OptionsToggle()
     if InterfaceOptionsFrame:IsVisible() then
 		InterfaceOptionsFrame:Hide()
 	else
@@ -9,151 +11,112 @@ end
 function MiscMenu_OpenOptions()
 	if InterfaceOptionsFrame:GetWidth() < 850 then InterfaceOptionsFrame:SetWidth(850) end
 	MiscMenu_DropDownInitialize()
-	UIDropDownMenu_SetText(MiscMenuOptions_TxtSizeMenu, Vanity_Menu.db.txtSize)
+	UIDropDownMenu_SetText(MiscMenuOptions_TxtSizeMenu, MM.db.txtSize)
 end
 
 --Creates the options frame and all its assets
 
-function Vanity_Menu:CreateOptionsUI()
+function MM:CreateOptionsUI()
 	if InterfaceOptionsFrame:GetWidth() < 850 then InterfaceOptionsFrame:SetWidth(850) end
-	local mainframe = {}
-		mainframe.panel = CreateFrame("FRAME", "MiscMenuOptionsFrame", UIParent, nil)
-    	local fstring = mainframe.panel:CreateFontString(mainframe, "OVERLAY", "GameFontNormal")
-		fstring:SetText("Profession Menu Settings")
+	self.options = { frame = {} }
+		self.options.frame.panel = CreateFrame("FRAME", "MiscMenuOptionsFrame", UIParent, nil)
+    	local fstring = self.options.frame.panel:CreateFontString(self.options.frame, "OVERLAY", "GameFontNormal")
+		fstring:SetText("MiscMenu Settings")
 		fstring:SetPoint("TOPLEFT", 15, -15)
-		mainframe.panel.name = "MiscMenu"
-		InterfaceOptions_AddCategory(mainframe.panel)
+		self.options.frame.panel.name = "MiscMenu"
+		InterfaceOptions_AddCategory(self.options.frame.panel)
 
-	local hideMenu = CreateFrame("CheckButton", "MiscMenuOptions_HideMenu", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	hideMenu:SetPoint("TOPLEFT", 15, -60)
-	hideMenu.Lable = hideMenu:CreateFontString(nil , "BORDER", "GameFontNormal")
-	hideMenu.Lable:SetJustifyH("LEFT")
-	hideMenu.Lable:SetPoint("LEFT", 30, 0)
-	hideMenu.Lable:SetText("Hide Standalone Button")
-	hideMenu:SetScript("OnClick", function() 
-		if self.db.HideMenu then
+	self.options.hideMenu = CreateFrame("CheckButton", "MiscMenuOptionsHideMenu", MiscMenuOptionsFrame, "UICheckButtonTemplate")
+	self.options.hideMenu:SetPoint("TOPLEFT", 15, -60)
+	self.options.hideMenu.Lable = self.options.hideMenu:CreateFontString(nil , "BORDER", "GameFontNormal")
+	self.options.hideMenu.Lable:SetJustifyH("LEFT")
+	self.options.hideMenu.Lable:SetPoint("LEFT", 30, 0)
+	self.options.hideMenu.Lable:SetText("Hide Standalone Button")
+	self.options.hideMenu:SetScript("OnClick", function() 
+		if self.db.hideMenu then
 			MiscMenuFrame:Show()
-			self.db.HideMenu = false
+			self.db.hideMenu = false
 		else
 			MiscMenuFrame:Hide()
-			self.db.HideMenu = true
+			self.db.hideMenu = true
 		end
 	end)
 
-	local hideHover = CreateFrame("CheckButton", "MiscMenuOptions_ShowOnHover", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	hideHover:SetPoint("TOPLEFT", 15, -95)
-	hideHover.Lable = hideHover:CreateFontString(nil , "BORDER", "GameFontNormal")
-	hideHover.Lable:SetJustifyH("LEFT")
-	hideHover.Lable:SetPoint("LEFT", 30, 0)
-	hideHover.Lable:SetText("Only Show Standalone Button on Hover")
-	hideHover:SetScript("OnClick", function()
-		if self.db.ShowMenuOnHover then
-			MiscMenuFrame_Menu:Show()
-            MiscMenuFrame.icon:Show()
-			MiscMenuFrame.Text:Show()
-			self.db.ShowMenuOnHover = false
+	self.options.hideNoMouseOver = CreateFrame("CheckButton", "MiscMenuOptionsHideNoMouseOver", MiscMenuOptionsFrame, "UICheckButtonTemplate")
+	self.options.hideNoMouseOver:SetPoint("TOPLEFT", 15, -95)
+	self.options.hideNoMouseOver.Lable = self.options.hideNoMouseOver:CreateFontString(nil , "BORDER", "GameFontNormal")
+	self.options.hideNoMouseOver.Lable:SetJustifyH("LEFT")
+	self.options.hideNoMouseOver.Lable:SetPoint("LEFT", 30, 0)
+	self.options.hideNoMouseOver.Lable:SetText("Only Show Standalone Button on Hover")
+	self.options.hideNoMouseOver:SetScript("OnClick", function()
+		if self.db.hideNoMouseOver then
+			MiscMenuOptionsFrame:Show()
+			self.db.hideNoMouseOver = false
 		else
-			MiscMenuFrame_Menu:Hide()
-            MiscMenuFrame.icon:Hide()
-			MiscMenuFrame.Text:Hide()
-			self.db.ShowMenuOnHover = true
-		end
-
-	end)
-
-	local hideMinimap = CreateFrame("CheckButton", "MiscMenuOptions_HideMinimap", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	hideMinimap:SetPoint("TOPLEFT", 15, -130)
-	hideMinimap.Lable = hideMinimap:CreateFontString(nil , "BORDER", "GameFontNormal")
-	hideMinimap.Lable:SetJustifyH("LEFT")
-	hideMinimap.Lable:SetPoint("LEFT", 30, 0)
-	hideMinimap.Lable:SetText("Hide Minimap Icon")
-	hideMinimap:SetScript("OnClick", function() self:ToggleMinimap() end)
-
-	local itemDel = CreateFrame("CheckButton", "MiscMenuOptions_DeleteMenu", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	itemDel:SetPoint("TOPLEFT", 15, -165)
-	itemDel.Lable = itemDel:CreateFontString(nil , "BORDER", "GameFontNormal")
-	itemDel.Lable:SetJustifyH("LEFT")
-	itemDel.Lable:SetPoint("LEFT", 30, 0)
-	itemDel.Lable:SetText("Delete vanity items after summoning")
-	itemDel:SetScript("OnClick", function() self.db.DeleteItem = not self.db.DeleteItem end)
-
-	local autoMenu = CreateFrame("CheckButton", "MiscMenuOptions_AutoMenu", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	autoMenu:SetPoint("TOPLEFT", 15, -200)
-	autoMenu.Lable = autoMenu:CreateFontString(nil , "BORDER", "GameFontNormal")
-	autoMenu.Lable:SetJustifyH("LEFT")
-	autoMenu.Lable:SetPoint("LEFT", 30, 0)
-	autoMenu.Lable:SetText("Show menu on hover")
-	autoMenu:SetScript("OnClick", function() self.db.autoMenu = not self.db.autoMenu end)
-
-	local hideRank = CreateFrame("CheckButton", "MiscMenuOptions_HideRank", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	hideRank:SetPoint("TOPLEFT", 15, -235)
-	hideRank.Lable = hideRank:CreateFontString(nil , "BORDER", "GameFontNormal")
-	hideRank.Lable:SetJustifyH("LEFT")
-	hideRank.Lable:SetPoint("LEFT", 30, 0)
-	hideRank.Lable:SetText("Hide profession rank")
-	hideRank:SetScript("OnClick", function() self.db.hideRank = not self.db.hideRank end)
-
-	local hideMaxRank = CreateFrame("CheckButton", "MiscMenuOptions_HideMaxRank", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	hideMaxRank:SetPoint("TOPLEFT", 15, -270)
-	hideMaxRank.Lable = hideMaxRank:CreateFontString(nil , "BORDER", "GameFontNormal")
-	hideMaxRank.Lable:SetJustifyH("LEFT")
-	hideMaxRank.Lable:SetPoint("LEFT", 30, 0)
-	hideMaxRank.Lable:SetText("Hide profession max rank")
-	hideMaxRank:SetScript("OnClick", function() self.db.hideMaxRank = not self.db.hideMaxRank end)
-
-	local showHerb = CreateFrame("CheckButton", "MiscMenuOptions_ShowHerb", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	showHerb:SetPoint("TOPLEFT", 15, -305)
-	showHerb.Lable = showHerb:CreateFontString(nil , "BORDER", "GameFontNormal")
-	showHerb.Lable:SetJustifyH("LEFT")
-	showHerb.Lable:SetPoint("LEFT", 30, 0)
-	showHerb.Lable:SetText("Show Herbalism")
-	showHerb:SetScript("OnClick", function() self.db.showHerb = not self.db.showHerb end)
-
-	local showOldTradeUI = CreateFrame("CheckButton", "MiscMenuOptions_ShowOldTradeSkillUI", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	showOldTradeUI:SetPoint("TOPLEFT", 15, -335)
-	showOldTradeUI.Lable = showOldTradeUI:CreateFontString(nil , "BORDER", "GameFontNormal")
-	showOldTradeUI.Lable:SetJustifyH("LEFT")
-	showOldTradeUI.Lable:SetPoint("LEFT", 30, 0)
-	showOldTradeUI.Lable:SetText("Show old Blizzard Trade Skill UI")
-	showOldTradeUI:SetScript("OnClick", function()
-		self.db.ShowOldTradeSkillUI = not self.db.ShowOldTradeSkillUI
-		if self.db.ShowOldTradeSkillUI then
-			UIParent:UnregisterEvent("TRADE_SKILL_SHOW")
-			self:RegisterEvent("TRADE_SKILL_SHOW")
-		else
-			self:UnregisterEvent("TRADE_SKILL_SHOW")
-			UIParent:RegisterEvent("TRADE_SKILL_SHOW")
+			MiscMenuOptionsFrame:Hide()
+			self.db.hideNoMouseOver = true
 		end
 	end)
 
-	local txtSize = CreateFrame("Button", "MiscMenuOptions_TxtSizeMenu", MiscMenuOptionsFrame, "UIDropDownMenuTemplate")
-	txtSize:SetPoint("TOPLEFT", 15, -370)
-	txtSize.Lable = txtSize:CreateFontString(nil , "BORDER", "GameFontNormal")
-	txtSize.Lable:SetJustifyH("LEFT")
-	txtSize.Lable:SetPoint("LEFT", txtSize, 190, 0)
-	txtSize.Lable:SetText("Menu Text Size")
+	self.options.hideMinimap = CreateFrame("CheckButton", "MiscMenuOptionsHideMinimap", MiscMenuOptionsFrame, "UICheckButtonTemplate")
+	self.options.hideMinimap:SetPoint("TOPLEFT", 15, -130)
+	self.options.hideMinimap.Lable = self.options.hideMinimap:CreateFontString(nil , "BORDER", "GameFontNormal")
+	self.options.hideMinimap.Lable:SetJustifyH("LEFT")
+	self.options.hideMinimap.Lable:SetPoint("LEFT", 30, 0)
+	self.options.hideMinimap.Lable:SetText("Hide minimap icon")
+	self.options.hideMinimap:SetScript("OnClick", function() self:ToggleMinimap() end)
+
+	self.options.autoDelete = CreateFrame("CheckButton", "MiscMenuOptionsAutoDelete", MiscMenuOptionsFrame, "UICheckButtonTemplate")
+	self.options.autoDelete:SetPoint("TOPLEFT", 15, -165)
+	self.options.autoDelete.Lable = self.options.autoDelete:CreateFontString(nil , "BORDER", "GameFontNormal")
+	self.options.autoDelete.Lable:SetJustifyH("LEFT")
+	self.options.autoDelete.Lable:SetPoint("LEFT", 30, 0)
+	self.options.autoDelete.Lable:SetText("Delete vanity items after summoning")
+	self.options.autoDelete:SetScript("OnClick", function() self.db.deleteItem = not self.db.deleteItem end)
+
+	self.options.autoMenu = CreateFrame("CheckButton", "MiscMenuOptionsAutoMenu", MiscMenuOptionsFrame, "UICheckButtonTemplate")
+	self.options.autoMenu:SetPoint("TOPLEFT", 15, -200)
+	self.options.autoMenu.Lable = self.options.autoMenu:CreateFontString(nil , "BORDER", "GameFontNormal")
+	self.options.autoMenu.Lable:SetJustifyH("LEFT")
+	self.options.autoMenu.Lable:SetPoint("LEFT", 30, 0)
+	self.options.autoMenu.Lable:SetText("Show menu on mouse over")
+	self.options.autoMenu:SetScript("OnClick", function() self.db.autoMenu = not self.db.autoMenu end)
+
+	self.options.txtSize = CreateFrame("Button", "MiscMenuOptions_TxtSizeMenu", MiscMenuOptionsFrame, "UIDropDownMenuTemplate")
+	self.options.txtSize:SetPoint("TOPLEFT", 15, -370)
+	self.options.txtSize.Lable = self.options.txtSize:CreateFontString(nil , "BORDER", "GameFontNormal")
+	self.options.txtSize.Lable:SetJustifyH("LEFT")
+	self.options.txtSize.Lable:SetPoint("LEFT", self.options.txtSize, 190, 0)
+	self.options.txtSize.Lable:SetText("Menu text size")
 end
 
-Vanity_Menu:CreateOptionsUI()
+MM:CreateOptionsUI()
 
-	function MiscMenu_Options_Menu_Initialize()
-		local info
-		for i = 10, 25 do
-					info = {
-						text = i;
-						func = function() 
-							Vanity_Menu.db.txtSize = i 
-							local thisID = this:GetID();
-							UIDropDownMenu_SetSelectedID(MiscMenuOptions_TxtSizeMenu, thisID)
-						end;
-					};
-						UIDropDownMenu_AddButton(info);
-		end
+function MiscMenu_Options_Menu_Initialize()
+	local info
+	for i = 10, 25 do
+				info = {
+					text = i;
+					func = function() 
+						MM.db.txtSize = i 
+						local thisID = this:GetID();
+						UIDropDownMenu_SetSelectedID(MiscMenuOptions_TxtSizeMenu, thisID)
+					end;
+				};
+					UIDropDownMenu_AddButton(info);
 	end
+end
 
-	function MiscMenu_DropDownInitialize()
-		--Setup for Dropdown menus in the settings
-		UIDropDownMenu_Initialize(MiscMenuOptions_TxtSizeMenu, MiscMenu_Options_Menu_Initialize )
-		UIDropDownMenu_SetSelectedID(MiscMenuOptions_TxtSizeMenu)
-		UIDropDownMenu_SetWidth(MiscMenuOptions_TxtSizeMenu, 150)
+function MiscMenu_DropDownInitialize()
+	--Setup for Dropdown menus in the settings
+	UIDropDownMenu_Initialize(MiscMenuOptions_TxtSizeMenu, MiscMenu_Options_Menu_Initialize )
+	UIDropDownMenu_SetSelectedID(MiscMenuOptions_TxtSizeMenu)
+	UIDropDownMenu_SetWidth(MiscMenuOptions_TxtSizeMenu, 150)
+end
+
+--Hook interface frame show to update options data
+InterfaceOptionsFrame:HookScript("OnShow", function()
+	if InterfaceOptionsFrame and MiscMenuOptionsFrame:IsVisible() then
+		MiscMenu_OpenOptions()
 	end
+end)
