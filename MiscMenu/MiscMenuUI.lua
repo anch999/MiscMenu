@@ -1,44 +1,44 @@
 local MM = LibStub("AceAddon-3.0"):GetAddon("MiscMenu")
 
+--------------- Creates the main misc menu standalone button ---------------
+
 function MM:CreateUI()
-    self.UI = {}
-    --Creates the main interface
-    self.UI.button = CreateFrame("Button", "MiscMenuFrame", UIParent)
-    self.UI.button:SetSize(70, 70)
-    self.UI.button:EnableMouse(true)
-    self.UI.button:SetScript("OnDragStart", function() self.UI.button:StartMoving() end)
-    self.UI.button:SetScript("OnDragStop", function()
-        self.UI.button:StopMovingOrSizing()
-        self.db.menuPos = { self.UI.button:GetPoint() }
-        self.db.menuPos[2] = "UIParent"
+
+    self.standaloneButton = CreateFrame("Button", "MiscMenuStandaloneButton", UIParent)
+    self.standaloneButton:SetSize(70, 70)
+    self.standaloneButton:EnableMouse(true)
+    self.standaloneButton:SetScript("OnDragStart", function() self.standaloneButton:StartMoving() end)
+    self.standaloneButton:SetScript("OnDragStop", function()
+        self.standaloneButton:StopMovingOrSizing()
+        self.charDB.menuPos = { self.standaloneButton:GetPoint() }
+        self.charDB.menuPos[2] = "UIParent"
     end)
-    self.UI.button:RegisterForClicks("LeftButtonDown", "RightButtonDown")
-    self.UI.button:SetScript("OnClick", function()  end)
-    self.UI.button.icon = self.UI.button:CreateTexture(nil, "ARTWORK")
-    self.UI.button.icon:SetSize(55, 55)
-    self.UI.button.icon:SetPoint("CENTER", self.UI.button, "CENTER", 0, 0)
-    self.UI.button.icon:SetTexture(self.defaultIcon)
-    self.UI.button.Text = self.UI.button:CreateFontString()
-    self.UI.button.Text:SetFont("Fonts\\FRIZQT__.TTF", 13)
-    self.UI.button.Text:SetFontObject(GameFontNormal)
-    self.UI.button.Text:SetText("|cffffffffMisc\nMenu")
-    self.UI.button.Text:SetPoint("CENTER", self.UI.button.icon, "CENTER", 0, 0)
-    self.UI.button.Highlight = self.UI.button:CreateTexture(nil, "OVERLAY")
-    self.UI.button.Highlight:SetSize(70, 70)
-    self.UI.button.Highlight:SetPoint("CENTER", self.UI.button, 0, 0)
-    self.UI.button.Highlight:SetTexture("Interface\\AddOns\\AwAddons\\Textures\\EnchOverhaul\\Slot2Selected")
-    self.UI.button.Highlight:Hide()
-    self.UI.button:Hide()
-    self.UI.button:SetScript("OnClick", function(button, btnclick)
+    self.standaloneButton:RegisterForClicks("LeftButtonDown", "RightButtonDown")
+    self.standaloneButton.icon = self.standaloneButton:CreateTexture(nil, "ARTWORK")
+    self.standaloneButton.icon:SetSize(55, 55)
+    self.standaloneButton.icon:SetPoint("CENTER", self.standaloneButton, "CENTER", 0, 0)
+    self.standaloneButton.icon:SetTexture(self.defaultIcon)
+    self.standaloneButton.Text = self.standaloneButton:CreateFontString()
+    self.standaloneButton.Text:SetFont("Fonts\\FRIZQT__.TTF", 13)
+    self.standaloneButton.Text:SetFontObject(GameFontNormal)
+    self.standaloneButton.Text:SetText("|cffffffffMisc\nMenu")
+    self.standaloneButton.Text:SetPoint("CENTER", self.standaloneButton.icon, "CENTER", 0, 0)
+    self.standaloneButton.Highlight = self.standaloneButton:CreateTexture(nil, "OVERLAY")
+    self.standaloneButton.Highlight:SetSize(70, 70)
+    self.standaloneButton.Highlight:SetPoint("CENTER", self.standaloneButton, 0, 0)
+    self.standaloneButton.Highlight:SetTexture("Interface\\AddOns\\AwAddons\\Textures\\EnchOverhaul\\Slot2Selected")
+    self.standaloneButton.Highlight:Hide()
+    self.standaloneButton:Hide()
+    self.standaloneButton:SetScript("OnClick", function(button, btnclick)
         if btnclick == "RightButton" then
             if self.unlocked then
                 self:UnlockFrame()
             end
-        else
+        elseif not self.unlocked then
             self:DewdropRegister(button, true)
         end
     end)
-    self.UI.button:SetScript("OnEnter", function(button)
+    self.standaloneButton:SetScript("OnEnter", function(button)
         if self.unlocked then
             GameTooltip:SetOwner(button, "ANCHOR_TOP")
             GameTooltip:AddLine("Left click to drag")
@@ -46,81 +46,225 @@ function MM:CreateUI()
             GameTooltip:Show()
         else
             self:OnEnter(button, true)
-            self.UI.button.Highlight:Show()
+            self.standaloneButton.Highlight:Show()
             self:ToggleMainButton("show")
         end
 
     end)
-    self.UI.button:SetScript("OnLeave", function()
-        self.UI.button.Highlight:Hide()
+    self.standaloneButton:SetScript("OnLeave", function()
         GameTooltip:Hide()
-        self:ToggleMainButton("hide")
-    end)
-
-    --Creates the randomPet button
-    self.randomPet = CreateFrame("Button", "MiscMenuRandomPet", UIParent, "SecureActionButtonTemplate")
-    self.randomPet:SetSize(70, 70)
-    self.randomPet:Show()
-    self.randomPet:EnableMouse(true)
-    self.randomPet:SetScript("OnDragStart", function() self.randomPet:StartMoving() end)
-    self.randomPet:SetScript("OnDragStop", function()
-        self.randomPet:StopMovingOrSizing()
-        self.db.randomPetPos = { self.randomPet:GetPoint() }
-        self.db.randomPetPos[2] = "UIParent"
-    end)
-    self.randomPet.icon = self.randomPet:CreateTexture(nil, "ARTWORK")
-    self.randomPet.icon:SetSize(55, 55)
-    self.randomPet.icon:SetPoint("CENTER", self.randomPet, "CENTER", 0, 0)
-    self.randomPet.Text = self.randomPet:CreateFontString()
-    self.randomPet.Text:SetFont("Fonts\\FRIZQT__.TTF", 13)
-    self.randomPet.Text:SetFontObject(GameFontNormal)
-    self.randomPet.Text:SetText("|cffffffffRandom\nPet")
-    self.randomPet.Text:SetPoint("CENTER", self.randomPet.icon, "CENTER", 0, 0)
-    self.randomPet.Highlight = self.randomPet:CreateTexture(nil, "OVERLAY")
-    self.randomPet.Highlight:SetSize(70, 70)
-    self.randomPet.Highlight:SetPoint("CENTER", self.randomPet, 0, 0)
-    self.randomPet.Highlight:SetTexture("Interface\\AddOns\\AwAddons\\Textures\\EnchOverhaul\\Slot2Selected")
-    self.randomPet.Highlight:Hide()
-    self.randomPet:SetScript("OnMouseDown", function(button, btnclick)
-        if btnclick == "RightButton" then
-            if self.randomPet.unlocked then
-                self:UnlockRandomPet()
-            end
+        if not self.unlocked then
+            self.standaloneButton.Highlight:Hide()
+            self:ToggleMainButton("hide")
         end
-    end)
-    self.randomPet:SetScript("OnEnter", function(button)
-        self.randomPet.Highlight:Show()
-        if self.randomPet.unlocked then
-            self.randomPet.spell = nil
-            GameTooltip:SetOwner(button, "ANCHOR_TOP")
-            GameTooltip:AddLine("Left click to drag")
-            GameTooltip:AddLine("Right click to lock frame")
-            GameTooltip:Show()
-        else
-            local spell, icon = select(3, GetCompanionInfo("CRITTER", math.random(1, GetNumCompanions("CRITTER"))))
-            self.randomPet.spell = GetSpellInfo(spell)
-            self.randomPet.icon:SetTexture(icon)
-            self.randomPet:SetAttribute("type1", "spell")
-            self.randomPet:SetAttribute("spell", self.randomPet.spell)
-            GameTooltip:SetOwner(button, "ANCHOR_TOP")
-            GameTooltip:AddLine("Summons Random Pet")
-            GameTooltip:Show()
-        end
-
-    end)
-    self.randomPet:SetScript("OnLeave", function()
-        self.randomPet.Highlight:Hide()
-        GameTooltip:Hide()
     end)
 end
 
 MM:CreateUI()
 
-------------frame functions for Misc Menu random pet button---------------
+--------------- Frame functions for misc menu standalone button---------------
+
+function MM:SetMenuPos()
+    if self.charDB.menuPos then
+        local pos = self.charDB.menuPos
+        self.standaloneButton:ClearAllPoints()
+        self.standaloneButton:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
+    else
+        self.standaloneButton:ClearAllPoints()
+        self.standaloneButton:SetPoint("CENTER", UIParent)
+    end
+end
+
+function MM:ToggleMainButton(toggle)
+    if self.db.hideNoMouseOver then
+        if toggle == "show" then
+            self.standaloneButton.icon:Show()
+            self.standaloneButton.Text:Show()
+        else
+            self.standaloneButton.icon:Hide()
+            self.standaloneButton.Text:Hide()
+        end
+    end
+end
+
+-- Used to show highlight as a frame mover
+function MM:UnlockFrame()
+    self = MM
+    if self.unlocked then
+        self.standaloneButton:SetMovable(false)
+        self.standaloneButton:RegisterForDrag()
+        self.standaloneButton.Highlight:Hide()
+        self.unlocked = false
+        GameTooltip:Hide()
+    else
+        self.standaloneButton:SetMovable(true)
+        self.standaloneButton:RegisterForDrag("LeftButton")
+        self.standaloneButton.Highlight:Show()
+        self.unlocked = true
+    end
+end
+
+-- toggle the main button frame
+function MM:ToggleStandaloneButton()
+    if self.standaloneButton:IsVisible() then
+        self.standaloneButton:Hide()
+    else
+        self.standaloneButton:Show()
+    end
+end
+
+local worldFrameHook
+--sets up the drop down menu for any menus
+function MM:DewdropRegister(button, showUnlock, profile)
+    profile = profile or self.charDB.currentProfile
+    if self.dewdrop:IsOpen(button) then self.dewdrop:Close() return end
+    self.dewdrop:Register(button,
+        'point', function(parent)
+            return "TOP", "BOTTOM"
+        end,
+        'children', function(level, value)
+            self.dewdrop:AddLine(
+                'text', "|cffffff00MiscMenu",
+                'textHeight', self.db.txtSize,
+                'textWidth', self.db.txtSize,
+                'isTitle', true,
+                'notCheckable', true
+            )
+            local setProfile = self.db.profileLists[profile]
+            local sortProfile = {}
+            if setProfile then
+                for _, v in ipairs(setProfile) do
+                    sortProfile[v[1]] = {v[2], v[3]}
+                end
+                for i = 1, #setProfile do
+                    if self.reorderMenu then
+                        MM:ChangeEntryOrder(sortProfile[i][1], sortProfile[i][2], i, setProfile)
+                    else
+                        MM:AddEntry(sortProfile[i][1], sortProfile[i][2])
+                    end
+                    
+                end
+            end
+            self:AddDividerLine(35)
+            self.dewdrop:AddLine(
+                    'text', "Reorder",
+                    'textHeight', self.db.txtSize,
+                    'textWidth', self.db.txtSize,
+                    'func', function() self.reorderMenu = not self.reorderMenu end,
+                    'checked', self.reorderMenu
+                )
+            if showUnlock then
+                self.dewdrop:AddLine(
+                    'text', "Unlock Frame",
+                    'textHeight', self.db.txtSize,
+                    'textWidth', self.db.txtSize,
+                    'func', self.UnlockFrame,
+                    'notCheckable', true,
+                    'closeWhenClicked', true
+                )
+            end
+            self.dewdrop:AddLine(
+				'text', "Options",
+                'textHeight', self.db.txtSize,
+                'textWidth', self.db.txtSize,
+				'func', self.OptionsToggle,
+				'notCheckable', true,
+                'closeWhenClicked', true
+			)
+            self.dewdrop:AddLine(
+				'text', "Close Menu",
+                'textR', 0,
+                'textG', 1,
+                'textB', 1,
+                'textHeight', self.db.txtSize,
+                'textWidth', self.db.txtSize,
+				'closeWhenClicked', true,
+				'notCheckable', true
+			)
+		end,
+		'dontHook', true
+	)
+    self.dewdrop:Open(button)
+    
+    if not worldFrameHook then
+        WorldFrame:HookScript("OnEnter", function()
+            if self.dewdrop:IsOpen(button) then
+                self.dewdrop:Close()
+            end
+        end)
+        worldFrameHook = true
+    end
+
+    GameTooltip:Hide()
+end
+
+--------------- Creates summon random pet button ---------------
+
+function MM:CreateRandomPetButton()
+     --Creates the randomPet button
+     self.randomPet = CreateFrame("Button", "MiscMenuRandomPet", UIParent, "SecureActionButtonTemplate")
+     self.randomPet:SetSize(70, 70)
+     self.randomPet:Show()
+     self.randomPet:EnableMouse(true)
+     self.randomPet:SetScript("OnDragStart", function() self.randomPet:StartMoving() end)
+     self.randomPet:SetScript("OnDragStop", function()
+         self.randomPet:StopMovingOrSizing()
+         self.charDB.randomPetPos = { self.randomPet:GetPoint() }
+         self.charDB.randomPetPos[2] = "UIParent"
+     end)
+     self.randomPet.icon = self.randomPet:CreateTexture(nil, "ARTWORK")
+     self.randomPet.icon:SetSize(55, 55)
+     self.randomPet.icon:SetPoint("CENTER", self.randomPet, "CENTER", 0, 0)
+     self.randomPet.Text = self.randomPet:CreateFontString()
+     self.randomPet.Text:SetFont("Fonts\\FRIZQT__.TTF", 13)
+     self.randomPet.Text:SetFontObject(GameFontNormal)
+     self.randomPet.Text:SetText("|cffffffffRandom\nPet")
+     self.randomPet.Text:SetPoint("CENTER", self.randomPet.icon, "CENTER", 0, 0)
+     self.randomPet.Highlight = self.randomPet:CreateTexture(nil, "OVERLAY")
+     self.randomPet.Highlight:SetSize(70, 70)
+     self.randomPet.Highlight:SetPoint("CENTER", self.randomPet, 0, 0)
+     self.randomPet.Highlight:SetTexture("Interface\\AddOns\\AwAddons\\Textures\\EnchOverhaul\\Slot2Selected")
+     self.randomPet.Highlight:Hide()
+     self.randomPet:SetScript("OnMouseDown", function(button, btnclick)
+         if btnclick == "RightButton" then
+             if self.randomPet.unlocked then
+                 self:UnlockRandomPet()
+             end
+         end
+     end)
+     self.randomPet:SetScript("OnEnter", function(button)
+         self.randomPet.Highlight:Show()
+         if self.randomPet.unlocked then
+             self.randomPet.spell = nil
+             GameTooltip:SetOwner(button, "ANCHOR_TOP")
+             GameTooltip:AddLine("Left click to drag")
+             GameTooltip:AddLine("Right click to lock frame")
+             GameTooltip:Show()
+         else
+             local spell, icon = select(3, GetCompanionInfo("CRITTER", math.random(1, GetNumCompanions("CRITTER"))))
+             self.randomPet.icon:SetTexture(icon)
+             self.randomPet:SetAttribute("type1", "spell")
+             self.randomPet:SetAttribute("spell", GetSpellInfo(spell))
+             GameTooltip:SetOwner(button, "ANCHOR_TOP")
+             GameTooltip:AddLine("Summons Random Pet")
+             GameTooltip:Show()
+         end
+ 
+     end)
+     self.randomPet:SetScript("OnLeave", function()
+         GameTooltip:Hide()
+         if not self.randomPet.unlocked then
+             self.randomPet.Highlight:Hide()
+         end
+     end)
+end
+MM:CreateRandomPetButton()
+
+--------------- Functions for random pet button ---------------
 
 function MM:SetRandomPetPos()
-    if self.db.randomPetPos then
-        local pos = self.db.randomPetPos
+    if self.charDB.randomPetPos then
+        local pos = self.charDB.randomPetPos
         self.randomPet:ClearAllPoints()
         self.randomPet:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
     else
@@ -142,66 +286,15 @@ end
 function MM:UnlockRandomPet()
     self = MM
     if self.randomPet.unlocked then
-        self.randomPet:SetMovable(true)
+        self.randomPet:SetMovable(false)
         self.randomPet:RegisterForDrag()
         self.randomPet.Highlight:Hide()
         self.randomPet.unlocked = false
         GameTooltip:Hide()
     else
-        self.randomPet:SetMovable(false)
+        self.randomPet:SetMovable(true)
         self.randomPet:RegisterForDrag("LeftButton")
         self.randomPet.Highlight:Show()
         self.randomPet.unlocked = true
-    end
-end
-
-------------frame functions for Misc Menu main button---------------
-
-function MM:SetMenuPos()
-    if self.db.menuPos then
-        local pos = self.db.menuPos
-        self.UI.button:ClearAllPoints()
-        self.UI.button:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
-    else
-        self.UI.button:ClearAllPoints()
-        self.UI.button:SetPoint("CENTER", UIParent)
-    end
-end
-
-function MM:ToggleMainButton(toggle)
-    if self.db.hideNoMouseOver then
-        if toggle == "show" then
-            self.UI.button.icon:Show()
-            self.UI.button.Text:Show()
-        else
-            self.UI.button.icon:Hide()
-            self.UI.button.Text:Hide()
-        end
-    end
-end
-
--- Used to show highlight as a frame mover
-function MM:UnlockFrame()
-    self = MM
-    if self.unlocked then
-        self.UI.button:SetMovable(false)
-        self.UI.button:RegisterForDrag()
-        self.UI.button.Highlight:Hide()
-        self.unlocked = false
-        GameTooltip:Hide()
-    else
-        self.UI.button:SetMovable(true)
-        self.UI.button:RegisterForDrag("LeftButton")
-        self.UI.button.Highlight:Show()
-        self.unlocked = true
-    end
-end
-
--- toggle the main button frame
-function MM:ToggleMiscMenuFrame()
-    if self.UI.button:IsVisible() then
-        self.UI.button:Hide()
-    else
-        self.UI.button:Show()
     end
 end

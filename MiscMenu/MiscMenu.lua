@@ -8,8 +8,8 @@ MM.defaultIcon = "Interface\\Icons\\INV_Misc_Book_06"
 
 --Set Savedvariables defaults
 local DefaultSettings  = {
-    hideNoMouseOver = { false, Frame = "MiscMenuFrame", CheckBox = "MiscMenuOptionsHideNoMouseOver" },
-    hideMenu        = { false, Frame = "MiscMenuFrame", CheckBox = "MiscMenuOptionsHideMenu"},
+    hideNoMouseOver = { false, Frame = "MiscMenuStandaloneButton", CheckBox = "MiscMenuOptionsHideNoMouseOver" },
+    hideMenu        = { false, Frame = "MiscMenuStandaloneButton", CheckBox = "MiscMenuOptionsHideMenu"},
     minimap         = { false, CheckBox = "MiscMenuOptionsHideMinimap"},
     txtSize         = 12,
     autoMenu        = { false, CheckBox = "MiscMenuOptionsAutoMenu"},
@@ -73,90 +73,6 @@ end
 function MM:UNIT_SPELLCAST_SUCCEEDED(event, arg1, arg2)
 	self:RemoveItem(arg2)
 end
-local worldFrameHook
---sets up the drop down menu for specs
-function MM:DewdropRegister(button, showUnlock, profile)
-    profile = profile or self.charDB.currentProfile
-    if self.dewdrop:IsOpen(button) then self.dewdrop:Close() return end
-    self.dewdrop:Register(button,
-        'point', function(parent)
-            return "TOP", "BOTTOM"
-        end,
-        'children', function(level, value)
-            self.dewdrop:AddLine(
-                'text', "|cffffff00MiscMenu",
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
-                'isTitle', true,
-                'notCheckable', true
-            )
-            local setProfile = self.db.profileLists[profile]
-            local sortProfile = {}
-            if setProfile then
-                for _, v in ipairs(setProfile) do
-                    sortProfile[v[1]] = {v[2], v[3]}
-                end
-                for i = 1, #setProfile do
-                    if self.reorderMenu then
-                        MM:ChangeEntryOrder(sortProfile[i][1], sortProfile[i][2], i, setProfile)
-                    else
-                        MM:AddEntry(sortProfile[i][1], sortProfile[i][2])
-                    end
-                    
-                end
-            end
-            self:AddDividerLine(35)
-            self.dewdrop:AddLine(
-                    'text', "Reorder",
-                    'textHeight', self.db.txtSize,
-                    'textWidth', self.db.txtSize,
-                    'func', function() self.reorderMenu = not self.reorderMenu end,
-                    'checked', self.reorderMenu
-                )
-            if showUnlock then
-                self.dewdrop:AddLine(
-                    'text', "Unlock Frame",
-                    'textHeight', self.db.txtSize,
-                    'textWidth', self.db.txtSize,
-                    'func', self.UnlockFrame,
-                    'notCheckable', true,
-                    'closeWhenClicked', true
-                )
-            end
-            self.dewdrop:AddLine(
-				'text', "Options",
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
-				'func', self.OptionsToggle,
-				'notCheckable', true,
-                'closeWhenClicked', true
-			)
-            self.dewdrop:AddLine(
-				'text', "Close Menu",
-                'textR', 0,
-                'textG', 1,
-                'textB', 1,
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
-				'closeWhenClicked', true,
-				'notCheckable', true
-			)
-		end,
-		'dontHook', true
-	)
-    self.dewdrop:Open(button)
-    
-    if not worldFrameHook then
-        WorldFrame:HookScript("OnEnter", function()
-            if self.dewdrop:IsOpen(button) then
-                self.dewdrop:Close()
-            end
-        end)
-        worldFrameHook = true
-    end
-
-    GameTooltip:Hide()
-end
 
 --[[
 MM:SlashCommand(msg):
@@ -178,6 +94,6 @@ function MM:SlashCommand(msg)
     elseif cmd == "unlockpet" then
         self:UnlockRandomPet()
     else
-        self:ToggleMiscMenuFrame()
+        self:ToggleStandaloneButton()
     end
 end

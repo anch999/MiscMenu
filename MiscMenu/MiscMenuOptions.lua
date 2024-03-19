@@ -34,10 +34,10 @@ function MM:CreateOptionsUI()
 	self.options.hideMenu.Lable:SetText("Hide Standalone Button")
 	self.options.hideMenu:SetScript("OnClick", function() 
 		if self.db.hideMenu then
-			MiscMenuFrame:Show()
+			self.standaloneButton:Show()
 			self.db.hideMenu = false
 		else
-			MiscMenuFrame:Hide()
+			self.standaloneButton:Hide()
 			self.db.hideMenu = true
 		end
 	end)

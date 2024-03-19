@@ -1,12 +1,12 @@
 ## Interface: 30300
 ## Title: MiscMenu
-## Notes: Profession Menu For Ascension
-## Author: Anch
+## Notes: Custom spell and item menu for Ascension
+## Author: Anch (Area-52)
 ## SavedVariables: MiscMenuDB
 ## SavedVariablesPerCharacter: MiscMenuCharDB
 ## X-Category: UnitFrame
 ## X-OptionsFrame: MiscMenuOptionsFrame
 ## DefaultState: enabled
-## Version: 1.7
+## Version: 1.0
 
 embeds.xml
