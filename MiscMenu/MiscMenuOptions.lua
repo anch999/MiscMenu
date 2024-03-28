@@ -270,7 +270,7 @@ function MM:DeleteEntryScrollFrameCreate()
 	--ScrollFrame
 
 	local ROW_HEIGHT = 16   -- How tall is each row?
-	local MAX_ROWS = 24      -- How many rows can be shown at once?
+	local MAX_ROWS = 18      -- How many rows can be shown at once?
 
 	self.deleteEntryScrollFrame = CreateFrame("Frame", "", MiscMenuAddItemsPanel)
 		self.deleteEntryScrollFrame:EnableMouse(true)
