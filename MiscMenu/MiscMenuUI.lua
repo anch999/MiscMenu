@@ -1,5 +1,6 @@
 local MM = LibStub("AceAddon-3.0"):GetAddon("MiscMenu")
-
+local CYAN =  "|cff00ffff"
+local LIMEGREEN = "|cFF32CD32"
 --------------- Creates the main misc menu standalone button ---------------
 
 function MM:CreateUI()
@@ -142,16 +143,16 @@ function MM:DewdropRegister(button, showUnlock, profile)
                     else
                         MM:AddEntry(sortProfile[i][1], sortProfile[i][2])
                     end
-                    
                 end
             end
             self:AddDividerLine(35)
+            local text = self.reorderMenu and LIMEGREEN.."Reorder" or "Reorder"
             self.dewdrop:AddLine(
-                    'text', "Reorder",
+                    'text', text,
                     'textHeight', self.db.txtSize,
                     'textWidth', self.db.txtSize,
                     'func', function() self.reorderMenu = not self.reorderMenu end,
-                    'checked', self.reorderMenu
+                    'notCheckable', true
                 )
             if showUnlock then
                 self.dewdrop:AddLine(
@@ -168,6 +169,7 @@ function MM:DewdropRegister(button, showUnlock, profile)
                 'textHeight', self.db.txtSize,
                 'textWidth', self.db.txtSize,
 				'func', self.OptionsToggle,
+                'funcRight', function() self:OptionsToggle(true) end,
 				'notCheckable', true,
                 'closeWhenClicked', true
 			)
@@ -199,13 +201,14 @@ function MM:DewdropRegister(button, showUnlock, profile)
 end
 
 --------------- Creates summon random pet button ---------------
-
+local petButtonCreated
 function MM:CreateRandomPetButton()
+    if petButtonCreated then return end
      --Creates the randomPet button
      self.randomPet = CreateFrame("Button", "MiscMenuRandomPet", UIParent, "SecureActionButtonTemplate")
      self.randomPet:SetSize(70, 70)
-     self.randomPet:Show()
      self.randomPet:EnableMouse(true)
+     self.randomPet:Hide()
      self.randomPet:SetScript("OnDragStart", function() self.randomPet:StartMoving() end)
      self.randomPet:SetScript("OnDragStop", function()
          self.randomPet:StopMovingOrSizing()
@@ -257,13 +260,8 @@ function MM:CreateRandomPetButton()
              self.randomPet.Highlight:Hide()
          end
      end)
-end
-MM:CreateRandomPetButton()
-
---------------- Functions for random pet button ---------------
-
-function MM:SetRandomPetPos()
-    if self.charDB.randomPetPos then
+     
+     if self.charDB.randomPetPos then
         local pos = self.charDB.randomPetPos
         self.randomPet:ClearAllPoints()
         self.randomPet:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
@@ -271,14 +269,19 @@ function MM:SetRandomPetPos()
         self.randomPet:ClearAllPoints()
         self.randomPet:SetPoint("CENTER", UIParent)
     end
+
+     petButtonCreated = true
 end
 
-function MM:ToggleRandomPet(toggle)
-    if toggle == "show" then
+--------------- Functions for random pet button ---------------
+
+function MM:ToggleRandomPet()
+    MM:CreateRandomPetButton()
+    if self.db.hideRandomPet then
+        self.randomPet:Hide()
+    else
         self.randomPet.icon:SetTexture(select(4, GetCompanionInfo("CRITTER", math.random(1, GetNumCompanions("CRITTER")))))
         self.randomPet:Show()
-    else
-        self.randomPet:Hide()
     end
 end
 

@@ -52,6 +52,7 @@ end
 
 -- add item or spell to the dropdown menu
 function MM:AddEntry(ID, eType)
+    if not CA_IsSpellKnown(ID) and not self:HasItem(ID) and not C_VanityCollection.IsCollectionItemOwned(ID) then return end
     local startTime, duration, name, icon
 
     if eType == "item" then
@@ -83,7 +84,7 @@ function MM:AddEntry(ID, eType)
                 else
                     if eType == "item" and self.db.deleteItem then
                         self.deleteItem = ID
-                        self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED") 
+                        self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
                     end
                     MM.dewdrop:Close()
                 end

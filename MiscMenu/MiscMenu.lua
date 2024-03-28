@@ -11,6 +11,7 @@ local DefaultSettings  = {
     hideNoMouseOver = { false, Frame = "MiscMenuStandaloneButton", CheckBox = "MiscMenuOptionsHideNoMouseOver" },
     hideMenu        = { false, Frame = "MiscMenuStandaloneButton", CheckBox = "MiscMenuOptionsHideMenu"},
     minimap         = { false, CheckBox = "MiscMenuOptionsHideMinimap"},
+    hideRandomPet   = { true },
     txtSize         = 12,
     autoMenu        = { false, CheckBox = "MiscMenuOptionsAutoMenu"},
     deleteItem      = { false, CheckBox = "MiscMenuOptionsAutoDelete" },
@@ -21,7 +22,7 @@ local CharDefaultSettings = {
     currentProfile = "default"
 }
 
---[[ TableName = Name of the saved setting
+--[[ DB = Name of the db you want to setup
 CheckBox = Global name of the checkbox if it has one and first numbered table entry is the boolean
 Text = Global name of where the text and first numbered table entry is the default text 
 Frame = Frame or button etc you want hidden/shown at start based on condition ]]
@@ -50,10 +51,10 @@ end
 
 function MM:OnEnable()
     self:SetMenuPos()
-    self:SetRandomPetPos()
     self:InitializeMinimap()
     self:ToggleMainButton("hide")
-    self:ToggleRandomPet("show")
+    self.standaloneButton:SetScale(self.db.buttonScale or 1)
+    if not self.db.hideRandomPet then self:ToggleRandomPet() end
 end
 
 function MM:OnInitialize()
@@ -93,6 +94,9 @@ function MM:SlashCommand(msg)
         self:DewdropRegister(GetMouseFocus(), nil, arg)
     elseif cmd == "unlockpet" then
         self:UnlockRandomPet()
+    elseif cmd == "pet" then
+       self.db.hideRandomPet = not self.db.hideRandomPet
+       self:ToggleRandomPet()
     else
         self:ToggleStandaloneButton()
     end
