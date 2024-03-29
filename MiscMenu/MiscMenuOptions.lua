@@ -164,11 +164,15 @@ end
 MM:CreateOptionsUI()
 
 function MM:AddItem()
-	local infoType, ID = GetCursorInfo()
+	local infoType, ID , bookType = GetCursorInfo()
 	local profile = self.db.profileLists[self.db.selectedProfile]
 	if not infoType then return end
 	if infoType == "item" then
 		tinsert(profile, {#profile+1, ID, infoType})
+	elseif infoType == "companion" and bookType == "CRITTER" then
+		tinsert(profile, {#profile+1, select(3, GetCompanionInfo("CRITTER", ID)), infoType})
+	elseif infoType == "companion" and bookType == "MOUNT" then
+		tinsert(profile, {#profile+1, select(3, GetCompanionInfo("MOUNT", ID)), "spell"})
 	else
 		tinsert(profile, {#profile+1, tonumber(GetSpellLink(ID, "spell"):match("spell:(%d+)")), infoType})
 	end
