@@ -170,7 +170,7 @@ function MM:AddItem()
 	if infoType == "item" then
 		tinsert(profile, {#profile+1, ID, infoType})
 	elseif infoType == "companion" and bookType == "CRITTER" then
-		tinsert(profile, {#profile+1, select(3, GetCompanionInfo("CRITTER", ID)), infoType})
+		tinsert(profile, {#profile+1, select(3, GetCompanionInfo("CRITTER", ID)), "spell"})
 	elseif infoType == "companion" and bookType == "MOUNT" then
 		tinsert(profile, {#profile+1, select(3, GetCompanionInfo("MOUNT", ID)), "spell"})
 	else

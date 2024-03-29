@@ -7,6 +7,6 @@
 ## X-Category: UnitFrame
 ## X-OptionsFrame: MiscMenuOptionsFrame
 ## DefaultState: enabled
-## Version: 1.1
+## Version: 1.2
 
 embeds.xml
