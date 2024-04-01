@@ -16,6 +16,7 @@ local DefaultSettings  = {
     autoMenu        = { false, CheckBox = "MiscMenuOptionsAutoMenu"},
     deleteItem      = { false, CheckBox = "MiscMenuOptionsAutoDelete" },
     profileLists    = { { default = {} } },
+    selectedProfile = "default",
 }
 
 local CharDefaultSettings = {

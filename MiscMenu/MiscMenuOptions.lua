@@ -19,10 +19,6 @@ end
 function MiscMenu_OpenOptions()
 	if InterfaceOptionsFrame:GetWidth() < 850 then InterfaceOptionsFrame:SetWidth(850) end
 	MiscMenu_DropDownInitialize()
-	UIDropDownMenu_SetText(MiscMenuOptions_TxtSizeMenu, MM.db.txtSize)
-	UIDropDownMenu_SetText(MiscMenuOptions_ProfileSelectMenu, MM.db.selectedProfile)
-	UIDropDownMenu_SetText(MiscMenuOptions_ProfileSelectMenu2, MM.charDB.currentProfile)
-
 	MM:DeleteEntryScrollFrameUpdate()
 end
 
@@ -159,6 +155,77 @@ function MM:CreateOptionsUI()
 	end)
 	self.options.addButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
+	self.options.addProfileButton = CreateFrame("Button", "MiscMenuOptionsAddProfileButton", MiscMenuAddItemsPanel, "OptionsButtonTemplate")
+	self.options.addProfileButton:SetPoint("TOPLEFT", 350, -55)
+	self.options.addProfileButton:SetText("Add Profile")
+	self.options.addProfileButton:SetScript("OnClick", function()
+		StaticPopup_Show("MISCMENU_ADD_PROFILE")
+	end)
+
+	self.options.deleteProfileButton = CreateFrame("Button", "MiscMenuOptionsDeleteProfileButton", MiscMenuAddItemsPanel, "OptionsButtonTemplate")
+	self.options.deleteProfileButton:SetPoint("TOPLEFT", 445, -55)
+	self.options.deleteProfileButton:SetText("Delete Profile")
+	self.options.deleteProfileButton:SetScript("OnClick", function()
+		StaticPopup_Show("MISCMENU_DELETE_PROFILE")
+	end)
+
+
+		--[[
+	StaticPopupDialogs["MISCMENU_ADD_PROFILE"]
+	This is shown, if you want too share a wishlist
+	]]
+	StaticPopupDialogs["MISCMENU_ADD_PROFILE"] = {
+		text = "Add New Profile",
+		button1 = "Add",
+		button2 = "Cancel",
+		OnShow = function(self)
+			self:SetFrameStrata("TOOLTIP")
+		end,
+		OnAccept = function()
+			local name = _G[this:GetParent():GetName().."EditBox"]:GetText()
+			if self.db.profileLists[name] then
+				DEFAULT_CHAT_FRAME:AddMessage("Can't add profile as a profile with the name already exists")
+			else
+				self.db.profileLists[name] = {}
+				self.db.selectedProfile = name
+				self:DeleteEntryScrollFrameUpdate()
+				MiscMenu_DropDownInitialize()
+			end
+		end,
+		hasEditBox = 1,
+		timeout = 0,
+		whileDead = 1,
+		hideOnEscape = 1
+	}
+
+			--[[
+	StaticPopupDialogs["MISCMENU_ADD_PROFILE"]
+	This is shown, if you want too share a wishlist
+	]]
+	StaticPopupDialogs["MISCMENU_DELETE_PROFILE"] = {
+		text = "Delete Selected Profile",
+		button1 = "Delete",
+		button2 = "Cancel",
+		OnShow = function(self)
+			self:SetFrameStrata("TOOLTIP")
+		end,
+		OnAccept = function()
+			local name = _G[this:GetParent():GetName().."EditBox"]:GetText()
+			if name == "default" then
+				DEFAULT_CHAT_FRAME:AddMessage("You can't delete the default profile")
+			else
+				self.db.profileLists[self.db.selectedProfile] = nil
+				if self.charDB.currentProfile == self.db.selectedProfile then self.charDB.currentProfile = "default" end
+				self.db.selectedProfile = "default"
+				self:DeleteEntryScrollFrameUpdate()
+				MiscMenu_DropDownInitialize()
+			end
+		end,
+		timeout = 0,
+		whileDead = 1,
+		hideOnEscape = 1
+	}
+
 end
 
 MM:CreateOptionsUI()
@@ -197,13 +264,14 @@ function MiscMenu_Options_Profile_Select_Initialize()
 		}
 			UIDropDownMenu_AddButton(info)
 	end
+	UIDropDownMenu_SetWidth(MiscMenuOptions_ProfileSelectMenu, 150)
 	UIDropDownMenu_SetSelectedID(MiscMenuOptions_ProfileSelectMenu, selected)
 end
 
 function MiscMenu_Options_Profile_Select2_Initialize()
 	local i, info, selected = 1
 	for name, _ in pairs(MM.db.profileLists) do
-		if name == MM.db.currentProfile then
+		if name == MM.charDB.currentProfile then
 			selected = i
 		end
 		i = i + 1
@@ -217,6 +285,7 @@ function MiscMenu_Options_Profile_Select2_Initialize()
 		}
 			UIDropDownMenu_AddButton(info)
 	end
+	UIDropDownMenu_SetWidth(MiscMenuOptions_ProfileSelectMenu2, 150)
 	UIDropDownMenu_SetSelectedID(MiscMenuOptions_ProfileSelectMenu2, selected)
 end
 
@@ -233,21 +302,15 @@ function MiscMenu_Options_Menu_Initialize()
 		}
 			UIDropDownMenu_AddButton(info)
 	end
+	UIDropDownMenu_SetWidth(MiscMenuOptions_TxtSizeMenu, 150)
+	UIDropDownMenu_SetSelectedID(MiscMenuOptions_TxtSizeMenu, MM.db.txtSize - 9)
 end
 
 function MiscMenu_DropDownInitialize()
 	--Setup for Dropdown menus in the settings
 	UIDropDownMenu_Initialize(MiscMenuOptions_TxtSizeMenu, MiscMenu_Options_Menu_Initialize )
-	UIDropDownMenu_SetSelectedID(MiscMenuOptions_TxtSizeMenu)
-	UIDropDownMenu_SetWidth(MiscMenuOptions_TxtSizeMenu, 150)
-
 	UIDropDownMenu_Initialize(MiscMenuOptions_ProfileSelectMenu2, MiscMenu_Options_Profile_Select2_Initialize )
-	UIDropDownMenu_SetSelectedID(MiscMenuOptions_ProfileSelectMenu2)
-	UIDropDownMenu_SetWidth(MiscMenuOptions_ProfileSelectMenu2, 150)
-
 	UIDropDownMenu_Initialize(MiscMenuOptions_ProfileSelectMenu, MiscMenu_Options_Profile_Select_Initialize )
-	UIDropDownMenu_SetSelectedID(MiscMenuOptions_ProfileSelectMenu)
-	UIDropDownMenu_SetWidth(MiscMenuOptions_ProfileSelectMenu, 150)
 end
 
 --Hook interface frame show to update options data
