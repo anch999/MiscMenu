@@ -50,20 +50,15 @@ function MM:CreateOptionsUI()
 		end
 	end)
 
-	self.options.hideNoMouseOver = CreateFrame("CheckButton", "MiscMenuOptionsHideNoMouseOver", MiscMenuOptionsFrame, "UICheckButtonTemplate")
-	self.options.hideNoMouseOver:SetPoint("TOPLEFT", 30, -95)
-	self.options.hideNoMouseOver.Lable = self.options.hideNoMouseOver:CreateFontString(nil , "BORDER", "GameFontNormal")
-	self.options.hideNoMouseOver.Lable:SetJustifyH("LEFT")
-	self.options.hideNoMouseOver.Lable:SetPoint("LEFT", 30, 0)
-	self.options.hideNoMouseOver.Lable:SetText("Only Show Standalone Button on Hover")
-	self.options.hideNoMouseOver:SetScript("OnClick", function()
-		if self.db.hideNoMouseOver then
-			MiscMenuOptionsFrame:Show()
-			self.db.hideNoMouseOver = false
-		else
-			MiscMenuOptionsFrame:Hide()
-			self.db.hideNoMouseOver = true
-		end
+	self.options.enableAutoHide = CreateFrame("CheckButton", "MiscMenuOptionsEnableAutoHide", MiscMenuOptionsFrame, "UICheckButtonTemplate")
+	self.options.enableAutoHide:SetPoint("TOPLEFT", 30, -95)
+	self.options.enableAutoHide.Lable = self.options.enableAutoHide:CreateFontString(nil , "BORDER", "GameFontNormal")
+	self.options.enableAutoHide.Lable:SetJustifyH("LEFT")
+	self.options.enableAutoHide.Lable:SetPoint("LEFT", 30, 0)
+	self.options.enableAutoHide.Lable:SetText("Only Show Standalone Button on Hover")
+	self.options.enableAutoHide:SetScript("OnClick", function()
+		self.db.enableAutoHide = not self.db.enableAutoHide
+		self:ToggleMainButton(self.db.enableAutoHide)
 	end)
 
 	self.options.hideMinimap = CreateFrame("CheckButton", "MiscMenuOptionsHideMinimap", MiscMenuOptionsFrame, "UICheckButtonTemplate")

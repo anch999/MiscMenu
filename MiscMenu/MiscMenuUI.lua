@@ -48,7 +48,7 @@ function MM:CreateUI()
         else
             self:OnEnter(button, true)
             self.standaloneButton.Highlight:Show()
-            self:ToggleMainButton("show")
+            self:ToggleMainButton()
         end
 
     end)
@@ -56,7 +56,7 @@ function MM:CreateUI()
         GameTooltip:Hide()
         if not self.unlocked then
             self.standaloneButton.Highlight:Hide()
-            self:ToggleMainButton("hide")
+            self:ToggleMainButton(self.db.enableAutoHide)
         end
     end)
 end
@@ -76,15 +76,13 @@ function MM:SetMenuPos()
     end
 end
 
-function MM:ToggleMainButton(toggle)
-    if self.db.hideNoMouseOver then
-        if toggle == "show" then
-            self.standaloneButton.icon:Show()
-            self.standaloneButton.Text:Show()
-        else
-            self.standaloneButton.icon:Hide()
-            self.standaloneButton.Text:Hide()
-        end
+function MM:ToggleMainButton(hide)
+    if hide then
+        self.standaloneButton.icon:Hide()
+        self.standaloneButton.Text:Hide()
+    else
+        self.standaloneButton.icon:Show()
+        self.standaloneButton.Text:Show()
     end
 end
 

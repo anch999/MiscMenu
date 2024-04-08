@@ -8,7 +8,7 @@ MM.defaultIcon = "Interface\\Icons\\INV_Misc_Book_06"
 
 --Set Savedvariables defaults
 local DefaultSettings  = {
-    hideNoMouseOver = { false, Frame = "MiscMenuStandaloneButton", CheckBox = "MiscMenuOptionsHideNoMouseOver" },
+    enableAutoHide = { false, CheckBox = "MiscMenuOptionsEnableAutoHide" },
     hideMenu        = { false, Frame = "MiscMenuStandaloneButton", CheckBox = "MiscMenuOptionsHideMenu"},
     minimap         = { false, CheckBox = "MiscMenuOptionsHideMinimap"},
     hideRandomPet   = { true },
@@ -53,7 +53,7 @@ end
 function MM:OnEnable()
     self:SetMenuPos()
     self:InitializeMinimap()
-    self:ToggleMainButton("hide")
+    self:ToggleMainButton(self.db.enableAutoHide)
     self.standaloneButton:SetScale(self.db.buttonScale or 1)
     if not self.db.hideRandomPet then self:ToggleRandomPet() end
 end
