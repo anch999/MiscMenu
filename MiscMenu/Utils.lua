@@ -38,7 +38,7 @@ end
 
 -- deletes item from players inventory if value 2 in the items table is set
 function MM:RemoveItem(arg2)
-	if not self.db.deleteItem then return end
+	if not self.db.AutoDeleteItems or not self.deleteItem then return end
         if strfind(arg2, (GetItemInfo(self.deleteItem))) then
             local found, bag, slot = self:HasItem(self.deleteItem)
             if found and C_VanityCollection.IsCollectionItemOwned(self.deleteItem) and self:IsRealmbound(bag, slot) then
@@ -47,7 +47,6 @@ function MM:RemoveItem(arg2)
             end
             self.deleteItem = nil
         end
-	self:UnregisterEvent("UNIT_SPELLCAST_SUCCEEDED")
 end
 
 -- add item or spell to the dropdown menu
@@ -82,15 +81,14 @@ function MM:AddEntry(ID, eType)
                 if eType == "item" and not self:HasItem(ID) then
                     RequestDeliverVanityCollectionItem(ID)
                 else
-                    if eType == "item" and self.db.deleteItem then
+                    if eType == "item" and self.db.AutoDeleteItems then
                         self.deleteItem = ID
-                        self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
                     end
                     MM.dewdrop:Close()
                 end
             end,
-            'textHeight', self.db.txtSize,
-            'textWidth', self.db.txtSize
+            'textHeight', self.db.TxtSize,
+            'textWidth', self.db.TxtSize
     )
 end
 
@@ -131,8 +129,8 @@ function MM:ChangeEntryOrder(ID, eType, num, profile)
             'icon', icon,
             'func', function() MM:MoveEntry(num, num - 1, profile) end,
             'funcRight', function() MM:MoveEntry(num, num + 1, profile) end,
-            'textHeight', self.db.txtSize,
-            'textWidth', self.db.txtSize
+            'textHeight', self.db.TxtSize,
+            'textWidth', self.db.TxtSize
     )
 end
 
@@ -141,8 +139,8 @@ function MM:AddDividerLine(maxLenght)
     local text = WHITE.."----------------------------------------------------------------------------------------------------"
     MM.dewdrop:AddLine(
         'text' , text:sub(1, maxLenght),
-        'textHeight', self.db.txtSize,
-        'textWidth', self.db.txtSize,
+        'textHeight', self.db.TxtSize,
+        'textWidth', self.db.TxtSize,
         'isTitle', true,
         "notCheckable", true
     )
@@ -158,7 +156,7 @@ function MM:GetTipAnchor(frame)
 end
 
 function MM:OnEnter(button, show)
-    if self.db.autoMenu and not UnitAffectingCombat("player") then
+    if self.db.AutoMenu and not UnitAffectingCombat("player") then
         self:DewdropRegister(button, show)
     else
         GameTooltip:SetOwner(button, 'ANCHOR_NONE')
@@ -167,4 +165,42 @@ function MM:OnEnter(button, show)
         GameTooltip:AddLine("MiscMenu")
         GameTooltip:Show()
     end
+end
+
+function MM:ItemTemplate_OnEnter(button)
+    self.shiftKeyDown = false
+    if not button.itemLink then return end
+    if IsShiftKeyDown() then
+        self.shiftKeyDown = true
+    end
+    if button.defaultAnchor then
+        GameTooltip_SetDefaultAnchor(GameTooltip, button)
+    else
+        GameTooltip:SetOwner(button, "ANCHOR_RIGHT", -13, -50)
+    end
+    GameTooltip:SetHyperlink(button.itemLink)
+    GameTooltip:Show()
+end
+
+function MM:ItemTemplate_OnLeave()
+    self.shiftKeyDown = false
+    GameTooltip:Hide()
+end
+
+function MM:SetFramePos(frame, pos)
+    if pos then
+        frame:ClearAllPoints()
+        frame:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
+    else
+        frame:ClearAllPoints()
+        frame:SetPoint("CENTER", UIParent)
+    end
+end
+
+function MM:GetPetIdFromSpellID(spellID, companionType)
+    for i = 1, GetNumCompanions(companionType) do
+        if select(3,GetCompanionInfo(companionType, i)) == spellID then
+           return i
+        end
+     end
 end

@@ -56,7 +56,7 @@ function MM:CreateUI()
         GameTooltip:Hide()
         if not self.unlocked then
             self.standaloneButton.Highlight:Hide()
-            self:ToggleMainButton(self.db.enableAutoHide)
+            self:ToggleMainButton(self.db.EnableAutoHide)
         end
     end)
 end
@@ -64,17 +64,6 @@ end
 MM:CreateUI()
 
 --------------- Frame functions for misc menu standalone button---------------
-
-function MM:SetMenuPos()
-    if self.charDB.menuPos then
-        local pos = self.charDB.menuPos
-        self.standaloneButton:ClearAllPoints()
-        self.standaloneButton:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
-    else
-        self.standaloneButton:ClearAllPoints()
-        self.standaloneButton:SetPoint("CENTER", UIParent)
-    end
-end
 
 function MM:ToggleMainButton(hide)
     if hide then
@@ -119,13 +108,14 @@ function MM:DewdropRegister(button, showUnlock, profile)
     if self.dewdrop:IsOpen(button) then self.dewdrop:Close() return end
     self.dewdrop:Register(button,
         'point', function(parent)
-            return "TOP", "BOTTOM"
+            local point1, _, point2 = self:GetTipAnchor(button)
+            return point1, point2
         end,
         'children', function(level, value)
             self.dewdrop:AddLine(
                 'text', "|cffffff00MiscMenu",
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
+                'textHeight', self.db.TxtSize,
+                'textWidth', self.db.TxtSize,
                 'isTitle', true,
                 'notCheckable', true
             )
@@ -147,16 +137,24 @@ function MM:DewdropRegister(button, showUnlock, profile)
             local text = self.reorderMenu and LIMEGREEN.."Reorder" or "Reorder"
             self.dewdrop:AddLine(
                     'text', text,
-                    'textHeight', self.db.txtSize,
-                    'textWidth', self.db.txtSize,
+                    'textHeight', self.db.TxtSize,
+                    'textWidth', self.db.TxtSize,
                     'func', function() self.reorderMenu = not self.reorderMenu end,
                     'notCheckable', true
+                )
+            self.dewdrop:AddLine(
+                    'text', "Unlock Action Bar Frame",
+                    'textHeight', self.db.TxtSize,
+                    'textWidth', self.db.TxtSize,
+                    'func', self.ActionBarUnlockFrame,
+                    'notCheckable', true,
+                    'closeWhenClicked', true
                 )
             if showUnlock then
                 self.dewdrop:AddLine(
                     'text', "Unlock Frame",
-                    'textHeight', self.db.txtSize,
-                    'textWidth', self.db.txtSize,
+                    'textHeight', self.db.TxtSize,
+                    'textWidth', self.db.TxtSize,
                     'func', self.UnlockFrame,
                     'notCheckable', true,
                     'closeWhenClicked', true
@@ -164,8 +162,8 @@ function MM:DewdropRegister(button, showUnlock, profile)
             end
             self.dewdrop:AddLine(
 				'text', "Options",
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
+                'textHeight', self.db.TxtSize,
+                'textWidth', self.db.TxtSize,
 				'func', self.OptionsToggle,
                 'funcRight', function() self:OptionsToggle(true) end,
 				'notCheckable', true,
@@ -176,8 +174,8 @@ function MM:DewdropRegister(button, showUnlock, profile)
                 'textR', 0,
                 'textG', 1,
                 'textB', 1,
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
+                'textHeight', self.db.TxtSize,
+                'textWidth', self.db.TxtSize,
 				'closeWhenClicked', true,
 				'notCheckable', true
 			)

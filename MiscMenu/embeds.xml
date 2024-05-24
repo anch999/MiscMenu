@@ -13,13 +13,14 @@
 <Include file="Libs\AceConsole-3.0\AceConsole-3.0.xml"/>
 <Script file="Libs\LibDataBroker-1.1\LibDataBroker-1.1.lua"/>
 <Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
-
-<Include file="Libs\DewdropLib\embeds.xml"/>
-<Script file="Libs\DewdropLib\Dewdrop-2.0\Dewdrop-2.0.lua"/>
+<Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
+<Script file="Libs\SettingsCreator-1.0\SettingsCreator.lua"/>
+<Include file="Templates.xml"/>
 
 <Script file="MiscMenu.lua"/>
-<Script file="MiscMenuOptions.lua"/>
+<Script file="Options.lua"/>
 <Script file="MiscMenuUI.lua"/>
 <Script file="Minimap.lua"/>
+<Script file="ActionBar.lua"/>
 <Script file="Utils.lua"/>
 </Ui>

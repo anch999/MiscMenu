@@ -9,7 +9,7 @@ local minimap = LibStub:GetLibrary('LibDataBroker-1.1'):NewDataObject("MiscMenu"
 
 function minimap.OnClick(self, button)
     GameTooltip:Hide()
-    if not MM.db.autoMenu then
+    if not MM.db.AutoMenu then
         MM:DewdropRegister(self)
     end
 end
@@ -23,9 +23,8 @@ function minimap.OnEnter(button)
 end
 
 function MM:ToggleMinimap()
-    local hide = not self.db.minimap
-    self.db.minimap = hide
-    if hide then
+    self.db.Minimap = not self.db.Minimap
+    if self.db.Minimap then
       icon:Hide('MiscMenu')
     else
       icon:Show('MiscMenu')
@@ -34,7 +33,7 @@ end
 
 function MM:InitializeMinimap()
     if icon then
-        self.minimap = {hide = self.db.minimap}
+        self.minimap = {hide = self.db.Minimap}
         icon:Register('MiscMenu', minimap, self.minimap)
     end
     minimap.icon = self.defaultIcon
