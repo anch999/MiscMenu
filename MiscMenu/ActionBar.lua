@@ -188,7 +188,10 @@ function MM:SetAttribute(button)
         itemLink =  GetSpellLink(ID)
         start, duration, enable = GetSpellCooldown(ID)
     elseif infoType == "item" then
-        name, itemLink, _,_,_,_,_,_,_, icon = GetItemInfo(ID)
+        local item = Item:CreateFromID(ID)
+        itemLink = item:GetLink()
+        name = item:GetName()
+        icon = item:GetIcon()
         start, duration, enable = GetItemCooldown(ID)
     elseif infoType == "macro" then
         name, icon = GetMacroInfo(ID)

@@ -127,6 +127,7 @@ function MM:CreateOptionsUI()
 				},
 				{
 					Type = "Button",
+					Position = "Right",
 					Name = "DeleteProflie",
 					Lable = "Delete Profile",
 					Size = {100,25},
@@ -227,8 +228,10 @@ function MM:AddItem()
 		tinsert(profile, {#profile+1, select(3, GetCompanionInfo("CRITTER", ID)), "spell"})
 	elseif infoType == "companion" and bookType == "MOUNT" then
 		tinsert(profile, {#profile+1, select(3, GetCompanionInfo("MOUNT", ID)), "spell"})
-	else
+	elseif infoType == "spell" then
 		tinsert(profile, {#profile+1, tonumber(GetSpellLink(ID, "spell"):match("spell:(%d+)")), infoType})
+	elseif infoType == "macro" then
+		tinsert(profile, {#profile+1, ID, infoType})
 	end
 	ClearCursor()
 end
@@ -351,17 +354,16 @@ function MM:DeleteEntryScrollFrameCreate()
 			self.deleteEntryScrollFrame.rows[i]:Hide()
 			if value <= maxValue then
 				local row = self.deleteEntryScrollFrame.rows[i]
-				local link = profile[value][3] == "item" and select(2,GetItemInfo(profile[value][2])) or GetSpellLink(profile[value][2])
-				row.Text:SetText(link)
+				local link = (profile[value][3] == "item") and select(2,GetItemInfo(profile[value][2])) or (profile[value][3] == "spell") and GetSpellLink(profile[value][2]) or (profile[value][3] == "macro") and nil
+				local text = link or GetMacroInfo(profile[value][2]).." (Macro)"
+				row.Text:SetText(text)
 				row:SetScript("OnClick", function()
 					for num, v in pairs(profile) do
 						if v[1] == profile[value][1] then
-							if v[1] > profile[value][1] then
-								v[1] = v[1] - 1
-							end
 							tremove(profile, num)
 							self:DeleteEntryScrollFrameUpdate()
-							break
+						elseif v[1] > profile[value][1] then
+							v[1] = v[1] - 1
 						end
 					end
 				end)

@@ -1,4 +1,4 @@
-local MM = LibStub("AceAddon-3.0"):NewAddon("MiscMenu", "AceTimer-3.0", "AceEvent-3.0", "SettingsCreator-1.0")
+local MM = LibStub("AceAddon-3.0"):NewAddon("MiscMenu", "AceTimer-3.0", "AceEvent-3.0", "SettingsCreater-1.0")
 
 MISCMENU = MM
 MM.dewdrop = AceLibrary("Dewdrop-2.0")

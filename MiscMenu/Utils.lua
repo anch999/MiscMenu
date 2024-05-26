@@ -50,27 +50,32 @@ function MM:RemoveItem(arg2)
 end
 
 -- add item or spell to the dropdown menu
-function MM:AddEntry(ID, eType)
-    if not CA_IsSpellKnown(ID) and not self:HasItem(ID) and not C_VanityCollection.IsCollectionItemOwned(ID) then return end
-    local startTime, duration, name, icon
+function MM:AddEntry(ID, infoType)
+    if not CA_IsSpellKnown(ID) and not self:HasItem(ID) and not C_VanityCollection.IsCollectionItemOwned(ID) and infoType ~= "macro" then return end
+    local startTime, duration, name, icon, cooldown
 
-    if eType == "item" then
-        name, _, _, _, _, _, _, _, _, icon = GetItemInfo(ID)
+    if infoType == "item" then
+        local item = Item:CreateFromID(ID)
+        name = item:GetName()
+        icon = item:GetIcon()
         startTime, duration = GetItemCooldown(ID)
-    else
+    elseif infoType == "spell" then
         name, _, icon = GetSpellInfo(ID)
         startTime, duration = GetSpellCooldown(ID)
+    elseif infoType == "macro" then
+        name, icon = GetMacroInfo(ID)
     end
-
-	local cooldown = math.ceil(((duration - (GetTime() - startTime))/60))
+    if startTime then
+	    cooldown = math.ceil(((duration - (GetTime() - startTime))/60))
+    end
 	local text = name
 
-	if cooldown > 0 then
+	if cooldown and cooldown > 0 then
 	text = name.." |cFF00FFFF("..cooldown.." ".. "mins" .. ")"
 	end
 	local secure = {
-	type1 = eType,
-	[eType] = name
+	type1 = infoType,
+	[infoType] = name
 	}
 
     MM.dewdrop:AddLine(
@@ -78,10 +83,10 @@ function MM:AddEntry(ID, eType)
             'icon', icon,
             'secure', secure,
             'func', function()
-                if eType == "item" and not self:HasItem(ID) then
+                if infoType == "item" and not self:HasItem(ID) then
                     RequestDeliverVanityCollectionItem(ID)
                 else
-                    if eType == "item" and self.db.AutoDeleteItems then
+                    if infoType == "item" and self.db.AutoDeleteItems then
                         self.deleteItem = ID
                     end
                     MM.dewdrop:Close()
@@ -106,15 +111,19 @@ function MM:MoveEntry(oldNum, newNum, profile)
 end
 
 -- add item or spell to the dropdown menu
-function MM:ChangeEntryOrder(ID, eType, num, profile)
+function MM:ChangeEntryOrder(ID, infoType, num, profile)
     local startTime, duration, name, icon
 
-    if eType == "item" then
-        name, _, _, _, _, _, _, _, _, icon = GetItemInfo(ID)
+    if infoType == "item" then
+        local item = Item:CreateFromID(ID)
+        name = item:GetName()
+        icon = item:GetIcon()
         startTime, duration = GetItemCooldown(ID)
-    else
+    elseif infoType == "spell" then
         name, _, icon = GetSpellInfo(ID)
         startTime, duration = GetSpellCooldown(ID)
+    elseif infoType == "macro" then
+        name, icon = GetMacroInfo(ID)
     end
 
 	local cooldown = math.ceil(((duration - (GetTime() - startTime))/60))
