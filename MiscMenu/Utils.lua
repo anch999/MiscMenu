@@ -36,16 +36,43 @@ function MM:HasItem(itemID)
 	return false
 end
 
+local spellList = {
+    [406] = "Summon Mystic Altar", -- Felforged Enchanting Altar
+	[1903513] = "Summon Mystic Altar", -- Normal Altar
+	[2903513] = "Summon Mystic Altar", -- Mechanical Mystic Altar
+	[8210192] = "Summon Mystic Altar", -- Build Master's Mystic Enchanting Altar
+	[8210195] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Druid)
+	[8210196] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Hunter)
+	[8210197] = "Summon Mystic Altar", -- Destined Mystic Enchanting Altar
+	[8210198] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Paladin)
+	[8210199] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Priest)
+	[8210200] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Rogue)
+	[8210201] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Shaman)
+	[8210202] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Warlock)
+	[8210203] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Warrior)
+    [1777028] = "Summon Thermal Anvil", -- thermal anvil
+    [1904514] = "Summon Sanguine Workbench", -- sanguine workbench vanity
+}
+
+function MM:GetItemSpellCastName(itemID)
+    if not itemID then return end
+    if spellList[itemID] then return spellList[itemID] end
+    return self:GetItemInfo(self.deleteItem)
+end
+
 -- deletes item from players inventory if value 2 in the items table is set
 function MM:RemoveItem(arg2)
 	if not self.db.AutoDeleteItems or not self.deleteItem then return end
-        if strfind(arg2, (GetItemInfo(self.deleteItem))) then
-            local found, bag, slot = self:HasItem(self.deleteItem)
-            if found and C_VanityCollection.IsCollectionItemOwned(self.deleteItem) and self:IsRealmbound(bag, slot) then
-                PickupContainerItem(bag, slot)
-                DeleteCursorItem()
+    local itemCast = self:GetItemSpellCastName(self.deleteItem)
+        if itemCast then
+            if strfind(arg2, itemCast) then
+                local found, bag, slot = self:HasItem(self.deleteItem)
+                if found and C_VanityCollection.IsCollectionItemOwned(self.deleteItem) and self:IsRealmbound(bag, slot) then
+                    PickupContainerItem(bag, slot)
+                    DeleteCursorItem()
+                end
+                self.deleteItem = nil
             end
-            self.deleteItem = nil
         end
 end
 
@@ -197,7 +224,7 @@ function MM:ItemTemplate_OnLeave()
 end
 
 function MM:SetFramePos(frame, pos)
-    if pos then
+    if pos and pos[1] then
         frame:ClearAllPoints()
         frame:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
     else
@@ -212,4 +239,13 @@ function MM:GetPetIdFromSpellID(spellID, companionType)
            return i
         end
      end
+end
+
+function MM:GetItemInfo(itemID)
+	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(itemID)
+	if not itemName then
+		local item = GetItemInfoInstant(itemID)
+		itemName, itemSubType, itemEquipLoc, itemTexture, itemQuality = item.name, _G["ITEM_SUBCLASS_"..item.classID.."_"..item.subclassID], itemEquipLocConversion[item.inventoryType], item.icon, item.quality
+	end
+	return itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice
 end

@@ -96,7 +96,6 @@ function MM:CreateOptionsUI()
 					Size = {240,16},
 					OnShow = function() self.options.ButtonScale:SetValue(self.db.buttonScale or 1) end,
 					OnValueChanged = function()
-						_G[self.options.ButtonScale:GetName().."Text"]:SetText("Standalone Button Scale: ".." ("..round(self.options.ButtonScale:GetValue(),2)..")")
 						self.db.buttonScale = self.options.ButtonScale:GetValue()
 						if self.standaloneButton then
 							self.standaloneButton:SetScale(self.db.buttonScale)
@@ -136,7 +135,62 @@ function MM:CreateOptionsUI()
 					end
 				},
 			}
-			}
+			},
+			{
+				Name = "ActionBarOptions",
+				TitleText = "ActionBar Options",
+				Left = {
+					{
+						Type = "Menu",
+						Name = "ActionBarSelect",
+						Lable = "Select Actionbar",
+					},
+					{
+						Type = "Menu",
+						Name = "SelectActionBarProfile",
+						Lable = "Select Profile",
+					},
+					{
+						Type = "Slider",
+						Name = "NumberOfActionbarButtons",
+						Lable = "Buttons",
+						MinMax = {1, 36},
+						Step = 1,
+						Size = {240,16},
+						OnShow = function(slider) slider:SetValue(self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons) end,
+						OnValueChanged = function(slider)
+							self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons = slider:GetValue()
+							self:SetActionBarLayout()
+						end
+					},
+					{
+						Type = "Slider",
+						Name = "NumberOfActionbarRows",
+						Lable = "Rows",
+						MinMax = {1, (self:GetNumberButtons()/2)},
+						Step = 1,
+						Size = {240,16},
+						OnShow = function(slider) slider:SetValue(self:GetNumberRows()) end,
+						OnValueChanged = function(slider)
+							local rows = slider:GetValue()
+							local numButtons = self:GetNumberButtons()
+							if math.floor(numButtons/rows) == numButtons/rows then
+								self.db.actionBarProfiles[self.charDB.actionBar.profile].rows = rows
+								self:SetActionBarLayout()
+							end
+						end
+					},
+					{
+						Type = "CheckButton",
+						Name = "ShowActionBar",
+						Lable = "Show Action Bar",
+						OnClick = function()
+							self.db.ShowActionBar = not self.db.ShowActionBar
+							self:ToggleActionBar()
+						end
+					},
+				}
+				}
 		}
 	self.options = self:CreateOptionsPages(Options, MiscMenuDB)
 	------------------------------ Profile Settings Panel ------------------------------
@@ -157,8 +211,6 @@ function MM:CreateOptionsUI()
 	end)
 	self.options.addButton:SetScript("OnLeave", function() GameTooltip:Hide() end)
 	self:DeleteEntryScrollFrameCreate()
-	
-
 
 		--[[
 	StaticPopupDialogs["MISCMENU_ADD_PROFILE"]
@@ -354,7 +406,7 @@ function MM:DeleteEntryScrollFrameCreate()
 			self.deleteEntryScrollFrame.rows[i]:Hide()
 			if value <= maxValue then
 				local row = self.deleteEntryScrollFrame.rows[i]
-				local link = (profile[value][3] == "item") and select(2,GetItemInfo(profile[value][2])) or (profile[value][3] == "spell") and GetSpellLink(profile[value][2]) or (profile[value][3] == "macro") and nil
+				local link = (profile[value][3] == "item") and select(2,self:GetItemInfo(profile[value][2])) or (profile[value][3] == "spell") and GetSpellLink(profile[value][2]) or (profile[value][3] == "macro") and nil
 				local text = link or GetMacroInfo(profile[value][2]).." (Macro)"
 				row.Text:SetText(text)
 				row:SetScript("OnClick", function()

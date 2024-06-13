@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "SettingsCreater-1.0", 1
+local MAJOR, MINOR = "SettingsCreater-1.0", 3
 
 if not AceLibrary then error(MAJOR .. " requires AceLibrary") end
 if not AceLibrary:IsNewVersion(MAJOR, MINOR) then return end
@@ -44,26 +44,26 @@ function SettingsCreater:SetupDB(db, defaultList)
 end
 
 local function CreateCheckButton(options, db, frame, addonName, setPoint, opTable)
-    options[opTable.Name] = CreateFrame("CheckButton", addonName..opTable.Name, frame, "UICheckButtonTemplate")
+    options[opTable.Name] = CreateFrame("CheckButton", addonName.."Options"..opTable.Name.."CheckButton", frame, "UICheckButtonTemplate")
     options[opTable.Name]:SetPoint(unpack(setPoint))
     options[opTable.Name].Lable = options[opTable.Name]:CreateFontString(nil , "BORDER", "GameFontNormal")
     options[opTable.Name].Lable:SetJustifyH("LEFT")
     options[opTable.Name].Lable:SetPoint("LEFT", 30, 0)
     options[opTable.Name].Lable:SetText(opTable.Lable)
     options[opTable.Name]:SetScript("OnClick", opTable.OnClick)
-    options[opTable.Name]:SetScript("OnEnter", opTable.OnEnter)
+    options[opTable.Name]:SetScript("OnEnter", opTable.Tooltip or opTable.OnEnter)
     options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
     options[opTable.Name]:SetChecked(db[opTable.Name] or false)
     return options[opTable.Name]
 end
 
 local function CreateButton(options, db, frame, addonName, setPoint, opTable)
-    options[opTable.Name] = CreateFrame("Button", addonName..opTable.Name, frame, "OptionsButtonTemplate")
+    options[opTable.Name] = CreateFrame("Button", addonName.."Options"..opTable.Name.."Button", frame, "OptionsButtonTemplate")
     options[opTable.Name]:SetSize(unpack(opTable.Size))
     options[opTable.Name]:SetPoint(unpack(setPoint))
     options[opTable.Name]:SetText(opTable.Lable)
     options[opTable.Name]:SetScript("OnClick", opTable.OnClick)
-    options[opTable.Name]:SetScript("OnEnter", opTable.OnEnter)
+    options[opTable.Name]:SetScript("OnEnter", opTable.Tooltip or opTable.OnEnter)
     options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
     return options[opTable.Name]
 end
@@ -76,23 +76,48 @@ local function CreateDropDownMenu(options, db, frame, addonName, setPoint, opTab
     options[opTable.Name].Lable:SetPoint("LEFT", options[opTable.Name], 190, 0)
     options[opTable.Name].Lable:SetText(opTable.Lable)
     options[opTable.Name]:SetScript("OnClick", opTable.OnClick)
-    options[opTable.Name]:SetScript("OnEnter", opTable.OnEnter)
+    options[opTable.Name]:SetScript("OnEnter", opTable.Tooltip or opTable.OnEnter)
     options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
     options[opTable.Name].Menu = opTable.Menu
     return options[opTable.Name]
 end
 
 local function CreateSlider(options, db, frame, addonName, setPoint, opTable)
-    options[opTable.Name] = CreateFrame("Slider", addonName..opTable.Name, frame, "OptionsSliderTemplate")
+    options[opTable.Name] = CreateFrame("Slider", addonName.."Options"..opTable.Name.."Slider", frame, "OptionsSliderTemplate")
     options[opTable.Name]:SetPoint(unpack(setPoint))
     options[opTable.Name]:SetSize(unpack(opTable.Size))
     options[opTable.Name]:SetMinMaxValues(opTable.MinMax[1], opTable.MinMax[2])
-    _G[options[opTable.Name]:GetName().."Text"]:SetText(opTable.Lable..": ".." ("..round(options[opTable.Name]:GetValue(),2)..")")
+    _G[options[opTable.Name]:GetName().."Text"]:SetText(opTable.Lable)
     _G[options[opTable.Name]:GetName().."Low"]:SetText(opTable.MinMax[1])
     _G[options[opTable.Name]:GetName().."High"]:SetText(opTable.MinMax[2])
-    options[opTable.Name]:SetScript("OnValueChanged", opTable.OnValueChanged)
+    options[opTable.Name]:SetScript("OnValueChanged", function(slider)
+        opTable.OnValueChanged(slider)
+        options[opTable.Name].editBox:SetText(round(options[opTable.Name]:GetValue(),2))
+    end)
     options[opTable.Name]:SetScript("OnShow", opTable.OnShow)
     options[opTable.Name]:SetValueStep(opTable.Step)
+    options[opTable.Name].editBox = CreateFrame("EditBox", addonName.."Options"..opTable.Name.."SliderInputBox", options[opTable.Name], "InputBoxTemplate2")
+    options[opTable.Name].editBox:SetSize(50, 25)
+    options[opTable.Name].editBox:SetJustifyH("CENTER")
+    options[opTable.Name].editBox:SetPoint("TOP", options[opTable.Name], "BOTTOM", 0, 0)
+    options[opTable.Name].editBox:SetScript("OnEnterPressed", function()
+        options[opTable.Name]:SetValue(round(options[opTable.Name].editBox:GetText(),2))
+    end)
+    return options[opTable.Name]
+end
+
+local function CreateInputBox(options, db, frame, addonName, setPoint, opTable)
+    options[opTable.Name] = CreateFrame("EditBox", addonName.."Options"..opTable.Name.."InputBox", frame, "InputBoxTemplate2")
+    options[opTable.Name]:SetPoint(unpack(setPoint))
+    options[opTable.Name]:SetSize(unpack(opTable.Size))
+    options[opTable.Name].Lable = options[opTable.Name]:CreateFontString(nil , "BORDER", "GameFontNormal")
+    options[opTable.Name].Lable:SetJustifyH("LEFT")
+    options[opTable.Name].Lable:SetPoint("BOTTOMLEFT", options[opTable.Name], "TOPLEFT", 0, 0)
+    options[opTable.Name].Lable:SetText(opTable.Lable)
+    options[opTable.Name]:SetScript("OnEnter", opTable.Tooltip or opTable.OnEnter)
+    options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
+    options[opTable.Name]:SetScript("OnTextChanged", opTable.OnTextChanged)
+    options[opTable.Name]:SetScript("OnEnterPressed", opTable.OnEnterPressed)
     return options[opTable.Name]
 end
 
@@ -158,6 +183,14 @@ function SettingsCreater:CreateOptionsPages(data, db)
                                 setPoint = (coloum == "Left") and {"TOPLEFT", 35, point} or (coloum == "Right") and {"TOPLEFT", 375, point}
                                 lastFrame = CreateSlider(options, db, frame, data.AddonName, setPoint, option )
                             end
+                        elseif option.Type == "EditBox" then
+                            if option.Position then
+                                setPoint = (option.Position == "Left") and {"RIGHT", lastFrame, "LEFT", -2, 0} or (option.Position == "Right") and {"LEFT", lastFrame, "RIGHT", 2, 0}
+                            else
+                                point = point -35
+                                setPoint = (coloum == "Left") and {"TOPLEFT", 30, point} or (coloum == "Right") and {"TOPLEFT", 375, point}
+                            end
+                            lastFrame = CreateInputBox(options, db, frame, data.AddonName, setPoint, option )
                         end
                     end
                 end

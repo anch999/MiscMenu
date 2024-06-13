@@ -18,12 +18,15 @@ local DefaultSettings  = {
     DeleteProflie      = { false },
     profileLists    = { { default = {} } },
     selectedProfile = "default",
-    actionBarProfiles = { { default = {} } }
+    actionBarProfiles = { { default = {} } },
+    actionBars = {{}},
+    ShowActionBar = false
 }
 
 local CharDefaultSettings = {
     currentProfile = "default",
-    actionBar = { {rows = 9, profile = "default" } }
+    actionBar = { {rows = 9, profile = "default" } },
+    syncBarPosition = true
 }
 
 function MM:OnInitialize()
@@ -44,6 +47,9 @@ function MM:OnEnable()
     self:ToggleMainButton(self.db.EnableAutoHide)
     self.standaloneButton:SetScale(self.db.buttonScale or 1)
     if not self.db.hideRandomPet then self:ToggleRandomPet() end
+    self.db.actionBars[GetRealmName()] = self.db.actionBars[GetRealmName()] or {[1] = {}}
+    self.db.actionBars[GetRealmName()][1].FramePos = self.db.actionBars[GetRealmName()][1].FramePos or {}
+    self.db.actionBars[GetRealmName()][1].rows = self.db.actionBars[GetRealmName()][1].rows or 9
     self:CreateActionBar()
     self:FirstLoad()
     self:RegisterEvent("UNIT_SPELLCAST_FAILED")
@@ -52,6 +58,7 @@ function MM:OnEnable()
     self:RegisterEvent("COMPANION_UPDATE")
     self:RegisterEvent("UI_ERROR_MESSAGE")
     self:RegisterEvent("EXECUTE_CHAT_LINE")
+    self:ToggleActionBar()
 end
 
 function MM:UNIT_SPELLCAST_SUCCEEDED(event, arg1, arg2)

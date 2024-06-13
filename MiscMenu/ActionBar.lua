@@ -17,8 +17,8 @@ function MM:CreateActionBar()
     end)
     self.actionBar.FrameMover:SetScript("OnDragStop", function()
         self.actionBar:StopMovingOrSizing()
-        self.charDB.actionBar.FramePos = { self.actionBar:GetPoint() }
-        self.charDB.actionBar.FramePos[2] = "UIParent"
+        self.db.actionBarProfiles[self.charDB.actionBar.profile].FramePos = { self.actionBar:GetPoint() }
+        self.db.actionBarProfiles[self.charDB.actionBar.profile].FramePos[2] = "UIParent"
     end)
     self.actionBar.FrameMover:SetFrameStrata("FULLSCREEN")
     self.actionBar.FrameMover.backTexture = self.actionBar.FrameMover:CreateTexture(nil, "BACKGROUND")
@@ -46,12 +46,12 @@ function MM:CreateActionBar()
     end
 
     function MM:SetActionBarLayout()
-        local numButtons = self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons
+        local rows = self:GetNumberRows()
+        local numButtons = self:GetNumberButtons()
         createButtons(numButtons)
-        local width, height = ((numButtons / self.charDB.actionBar.rows) * (self.actionBar.button1:GetWidth() + 4))-2, ((self.charDB.actionBar.rows) * (self.actionBar.button1:GetHeight() + 4))-2
+        local width, height = ((numButtons / rows) * (self.actionBar.button1:GetWidth() + 4))-2, ((rows) * (self.actionBar.button1:GetHeight() + 4))-2
         self.actionBar:SetSize(width, height)
         self.actionBar.FrameMover:SetSize(width, height)
-        local rows = self.charDB.actionBar.rows
         local column = (numButtons/rows)
         for r = 1, rows do
             for i = ((r*column)-column+1), (r*column) do
@@ -69,7 +69,7 @@ function MM:CreateActionBar()
         end
     end
     self:SetActionBarLayout()
-    self:SetFramePos(self.actionBar, self.charDB.actionBar.FramePos)
+    self:SetFramePos(self.actionBar, self.db.actionBarProfiles[self.charDB.actionBar.profile].FramePos)
 end
 
 function MM:ActionBarUnlockFrame()
@@ -162,7 +162,7 @@ function MM:PickupAction(button, swapInfo)
             if infoType == "inventory" then
                 PickupInventoryItem(ID)
             elseif infoType == "item" then
-                PickupItem(GetItemInfo(ID))
+                PickupItem(self:GetItemInfo(ID))
             elseif infoType == "macro" then
                 PickupMacro(ID)
             elseif info == "CRITTER" or info == "MOUNT" then
@@ -209,15 +209,17 @@ end
 
 function MM:FirstLoad()
     for i, button in ipairs(self.db.actionBarProfiles[self.charDB.actionBar.profile]) do
-        if button[1] == "item" then
-            local item = Item:CreateFromID(button[2])
-            if button[2] then
-                item:ContinueOnLoad(function()
-                    self:SetAttribute(self.actionBar["button"..i])
-                end)
+        if self.actionBar["button"..i] then
+            if button[1] == "item" then
+                local item = Item:CreateFromID(button[2])
+                if button[2] then
+                    item:ContinueOnLoad(function()
+                        self:SetAttribute(self.actionBar["button"..i])
+                    end)
+                end
+            else
+                self:SetAttribute(self.actionBar["button"..i])
             end
-        else
-            self:SetAttribute(self.actionBar["button"..i])
         end
     end
 end
@@ -226,5 +228,21 @@ function MM:ActionBarEvents(event, arg1, arg2)
     if self.activeButtonID then
         self.actionBar["button"..self.activeButtonID]:SetChecked(false)
         self.activeButtonID = nil
+    end
+end
+
+function MM:GetNumberRows()
+   return self.db.actionBarProfiles[self.charDB.actionBar.profile].rows or 12
+end
+
+function MM:GetNumberButtons()
+    return self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons or 2
+end
+
+function MM:ToggleActionBar()
+    if self.db.ShowActionBar then
+        self.actionBar:Show()
+    else
+        self.actionBar:Hide()
     end
 end
