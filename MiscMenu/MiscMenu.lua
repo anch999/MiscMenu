@@ -31,8 +31,8 @@ local CharDefaultSettings = {
 
 function MM:OnInitialize()
 
-    self.db = self:SetupDB(MiscMenuDB, DefaultSettings)
-    self.charDB = self:SetupDB(MiscMenuCharDB, CharDefaultSettings)
+    self.db = self:SetupDB("MiscMenuDB", DefaultSettings)
+    self.charDB = self:SetupDB("MiscMenuCharDB", CharDefaultSettings)
     self:CreateOptionsUI()
     --Enable the use of /MiscMenu slash command
     SLASH_MISCMENU1 = "/miscmenu"
@@ -47,9 +47,10 @@ function MM:OnEnable()
     self:ToggleMainButton(self.db.EnableAutoHide)
     self.standaloneButton:SetScale(self.db.buttonScale or 1)
     if not self.db.hideRandomPet then self:ToggleRandomPet() end
-    self.db.actionBars[GetRealmName()] = self.db.actionBars[GetRealmName()] or {[1] = {}}
-    self.db.actionBars[GetRealmName()][1].FramePos = self.db.actionBars[GetRealmName()][1].FramePos or {}
-    self.db.actionBars[GetRealmName()][1].rows = self.db.actionBars[GetRealmName()][1].rows or 9
+    local realm = GetRealmName()
+    self.db.actionBars[realm] = self.db.actionBars[realm] or {[1] = {}}
+    self.db.actionBars[realm][1].FramePos = self.db.actionBars[realm][1].FramePos or {}
+    self.db.actionBars[realm][1].rows = self.db.actionBars[realm][1].rows or 9
     self:CreateActionBar()
     self:FirstLoad()
     self:RegisterEvent("UNIT_SPELLCAST_FAILED")
