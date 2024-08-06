@@ -52,6 +52,9 @@ local spellList = {
 	[8210203] = "Summon Mystic Altar", -- Mystic Enchating Altar (League 4 - Warrior)
     [1777028] = "Summon Thermal Anvil", -- thermal anvil
     [1904514] = "Summon Sanguine Workbench", -- sanguine workbench vanity
+    [1913515] = "Calling the Board", -- Portable call board
+    [1913516] = "Calling the Board", -- Portable call board
+    [1913517] = "Calling the Board" -- Portable call board
 }
 
 function MM:GetItemSpellCastName(itemID)
