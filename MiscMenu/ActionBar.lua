@@ -203,7 +203,7 @@ function MM:SetAttribute(button)
     button.itemLink = itemLink
     button.Name:SetText(text)
     button.Icon:SetTexture(icon)
-    button:SetAttribute("type1", infoType)
+    button:SetAttribute("type", infoType)
     button:SetAttribute(infoType, name)
 end
 
