@@ -196,7 +196,6 @@ function MM:SetAttribute(button)
         icon = item:GetIcon()
         start, duration, enable = GetItemCooldown(ID)
     elseif infoType == "macro" then
-        print(ID)
         name, icon = GetMacroInfo(ID)
         text = name
     end
@@ -211,7 +210,7 @@ function MM:SetAttribute(button)
 end
 
 function MM:FirstLoad()
-    for i, button in ipairs(self.db.actionBarProfiles[self.charDB.actionBar.profile]) do
+    for i, _ in ipairs(self.db.actionBarProfiles[self.charDB.actionBar.profile]) do
         if self.actionBar["button"..i] then
             self:SetAttribute(self.actionBar["button"..i])
         end
