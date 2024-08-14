@@ -93,7 +93,7 @@ function MM:AddEntry(ID, infoType)
         name, _, icon = GetSpellInfo(ID)
         startTime, duration = GetSpellCooldown(ID)
     elseif infoType == "macro" then
-        name, icon = GetMacroInfo(ID)
+        name, icon = GetMacroInfo(GetMacroIndexByName(ID))
     end
     if startTime then
 	    cooldown = math.ceil(((duration - (GetTime() - startTime))/60))
@@ -153,7 +153,7 @@ function MM:ChangeEntryOrder(ID, infoType, num, profile)
         name, _, icon = GetSpellInfo(ID)
         startTime, duration = GetSpellCooldown(ID)
     elseif infoType == "macro" then
-        name, icon = GetMacroInfo(ID)
+        name, icon = GetMacroInfo(GetMacroIndexByName(ID))
     end
 
 	local cooldown = math.ceil(((duration - (GetTime() - startTime))/60))

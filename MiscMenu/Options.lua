@@ -283,7 +283,7 @@ function MM:AddItem()
 	elseif infoType == "spell" then
 		tinsert(profile, {#profile+1, tonumber(GetSpellLink(ID, "spell"):match("spell:(%d+)")), infoType})
 	elseif infoType == "macro" then
-		tinsert(profile, {#profile+1, ID, infoType})
+		tinsert(profile, {#profile+1, GetMacroInfo(ID), infoType})
 	end
 	ClearCursor()
 end
@@ -407,7 +407,7 @@ function MM:DeleteEntryScrollFrameCreate()
 			if value <= maxValue then
 				local row = self.deleteEntryScrollFrame.rows[i]
 				local link = (profile[value][3] == "item") and select(2,self:GetItemInfo(profile[value][2])) or (profile[value][3] == "spell") and GetSpellLink(profile[value][2]) or (profile[value][3] == "macro") and nil
-				local text = link or GetMacroInfo(profile[value][2]).." (Macro)"
+				local text = link or profile[value][2].." (Macro)"
 				row.Text:SetText(text)
 				row:SetScript("OnClick", function()
 					for num, v in pairs(profile) do

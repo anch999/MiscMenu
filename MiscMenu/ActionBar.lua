@@ -119,7 +119,6 @@ function MM:ActionBarOnClick(button)
 end
 
 function MM:PlaceAction(button)
-
     local infoType, ID, bookType = GetCursorInfo()
     local swapInfo
     if infoType then
@@ -132,6 +131,8 @@ function MM:PlaceAction(button)
         elseif infoType == "companion" and bookType == "MOUNT" then
             infoType = "spell"
             ID = select(3, GetCompanionInfo("MOUNT", ID))
+        elseif infoType == "macro" then
+            ID = GetMacroInfo(ID)
         end
         if self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID][1] then
             swapInfo = {unpack(self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID])}
@@ -164,13 +165,14 @@ function MM:PickupAction(button, swapInfo)
             elseif infoType == "item" then
                 PickupItem(self:GetItemInfo(ID))
             elseif infoType == "macro" then
+                if type(ID) == "string" then ID = GetMacroIndexByName(ID) end
                 PickupMacro(ID)
             elseif info == "CRITTER" or info == "MOUNT" then
                 PickupCompanion(info, self:GetPetIdFromSpellID(ID, info))
             elseif infoType == "spell" then
                 PickupSpell(GetSpellInfo(ID))
             elseif infoType == "equipmentset" then
-                 PickupEquipmentSet(ID);
+                 PickupEquipmentSet(ID)
             end
             self.actionBarLock = true
         if not swapInfo then
@@ -194,6 +196,7 @@ function MM:SetAttribute(button)
         icon = item:GetIcon()
         start, duration, enable = GetItemCooldown(ID)
     elseif infoType == "macro" then
+        print(ID)
         name, icon = GetMacroInfo(ID)
         text = name
     end
@@ -210,16 +213,7 @@ end
 function MM:FirstLoad()
     for i, button in ipairs(self.db.actionBarProfiles[self.charDB.actionBar.profile]) do
         if self.actionBar["button"..i] then
-            if button[1] == "item" then
-                local item = Item:CreateFromID(button[2])
-                if button[2] then
-                    item:ContinueOnLoad(function()
-                        self:SetAttribute(self.actionBar["button"..i])
-                    end)
-                end
-            else
-                self:SetAttribute(self.actionBar["button"..i])
-            end
+            self:SetAttribute(self.actionBar["button"..i])
         end
     end
 end
