@@ -80,8 +80,8 @@ function MM:RemoveItem(arg2)
 end
 
 -- add item or spell to the dropdown menu
-function MM:AddEntry(ID, infoType)
-    if not CA_IsSpellKnown(ID) and not self:HasItem(ID) and not C_VanityCollection.IsCollectionItemOwned(ID) and infoType ~= "macro" then return end
+function MM:AddEntry(ID, infoType, macroTxt)
+    if (infoType ~= "macro" and not CA_IsSpellKnown(ID)) and not self:HasItem(ID) and not C_VanityCollection.IsCollectionItemOwned(ID) and infoType ~= "macro" then return end
     local startTime, duration, name, icon, cooldown
 
     if infoType == "item" then
@@ -92,6 +92,8 @@ function MM:AddEntry(ID, infoType)
     elseif infoType == "spell" then
         name, _, icon = GetSpellInfo(ID)
         startTime, duration = GetSpellCooldown(ID)
+    elseif macroTxt then
+        name = "/reloadui"
     elseif infoType == "macro" then
         name, icon = GetMacroInfo(GetMacroIndexByName(ID))
     end
@@ -105,7 +107,7 @@ function MM:AddEntry(ID, infoType)
 	end
 	local secure = {
 	type1 = infoType,
-	[infoType] = name
+	[macroTxt or infoType] = name
 	}
 
     MM.dewdrop:AddLine(
