@@ -127,9 +127,9 @@ function MM:DewdropRegister(button, showUnlock, profile)
                 end
                 for i = 1, #setProfile do
                     if self.reorderMenu then
-                        MM:ChangeEntryOrder(sortProfile[i][1], sortProfile[i][2], i, setProfile)
+                        self:ChangeEntryOrder(sortProfile[i][1], sortProfile[i][2], i, setProfile)
                     else
-                        MM:AddEntry(sortProfile[i][1], sortProfile[i][2])
+                        self:AddEntry(sortProfile[i][1], sortProfile[i][2])
                     end
                 end
             end

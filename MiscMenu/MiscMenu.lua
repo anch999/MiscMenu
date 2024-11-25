@@ -30,7 +30,6 @@ local CharDefaultSettings = {
 }
 
 function MM:OnInitialize()
-
     self.db = self:SetupDB("MiscMenuDB", DefaultSettings)
     self.charDB = self:SetupDB("MiscMenuCharDB", CharDefaultSettings)
     self:CreateOptionsUI()
@@ -52,7 +51,7 @@ function MM:OnEnable()
     self.db.actionBars[realm][1].FramePos = self.db.actionBars[realm][1].FramePos or {}
     self.db.actionBars[realm][1].rows = self.db.actionBars[realm][1].rows or 9
     self:CreateActionBar()
-    self:FirstLoad()
+    self:SetActionBarProfile()
     self:RegisterEvent("UNIT_SPELLCAST_FAILED")
     self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")

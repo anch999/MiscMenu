@@ -158,10 +158,13 @@ function MM:ChangeEntryOrder(ID, infoType, num, profile)
         name, icon = GetMacroInfo(GetMacroIndexByName(ID))
     end
 
-	local cooldown = math.ceil(((duration - (GetTime() - startTime))/60))
+	local cooldown
+    if startTime then
+        cooldown = math.ceil(((duration - (GetTime() - startTime))/60))
+    end
 	local text = name
 
-	if cooldown > 0 then
+	if cooldown and cooldown > 0 then
 	text = name.." |cFF00FFFF("..cooldown.." ".. "mins" .. ")"
 	end
 
@@ -246,11 +249,36 @@ function MM:GetPetIdFromSpellID(spellID, companionType)
      end
 end
 
-function MM:GetItemInfo(itemID)
-	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(itemID)
-	if not itemName then
-		local item = GetItemInfoInstant(itemID)
-		itemName, itemSubType, itemEquipLoc, itemTexture, itemQuality = item.name, _G["ITEM_SUBCLASS_"..item.classID.."_"..item.subclassID], itemEquipLocConversion[item.inventoryType], item.icon, item.quality
+local itemEquipLocConversion = {
+	"INVTYPE_HEAD","INVTYPE_NECK","INVTYPE_SHOULDER","INVTYPE_BODY","INVTYPE_CHEST",
+	"INVTYPE_WAIST","INVTYPE_LEGS","INVTYPE_FEET","INVTYPE_WRIST",	"INVTYPE_HAND",
+	"INVTYPE_FINGER","INVTYPE_TRINKET","INVTYPE_WEAPON","INVTYPE_SHIELD","INVTYPE_RANGED",
+	"INVTYPE_CLOAK","INVTYPE_2HWEAPON","INVTYPE_BAG","INVTYPE_TABARD","INVTYPE_ROBE",
+    "INVTYPE_WEAPONMAINHAND","INVTYPE_WEAPONOFFHAND","INVTYPE_HOLDABLE","INVTYPE_AMMO",
+    "INVTYPE_THROWN","INVTYPE_RANGEDRIGHT","INVTYPE_QUIVER","INVTYPE_RELIC",
+}
+
+-- custom getiteminfo returns same formate as getiteminfo but will use info from either getiteminfo or getiteminfoinstant
+function MM:GetItemInfo(item)
+	item = tonumber(item) and Item:CreateFromID(item) or Item:CreateFromLink(item)
+	local itemDescription
+	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item.itemID)
+	if not item:GetInfo() then
+		self:ItemsLoading(1)
+		item:ContinueOnLoad(function()
+			self:ItemsLoading(-1)
+		end)
 	end
-	return itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice
+		local itemInstant = GetItemInfoInstant(item.itemID)
+		if itemInstant then
+			itemName = itemName or itemInstant.name
+			itemSubType = itemSubType or _G["ITEM_SUBCLASS_"..itemInstant.classID.."_"..itemInstant.subclassID]
+			itemEquipLoc = itemEquipLoc or itemEquipLocConversion[itemInstant.inventoryType]
+			itemTexture = itemTexture or itemInstant.icon
+			itemQuality = itemQuality or itemInstant.quality
+			itemLink = itemLink or item:GetLink()
+			itemLevel = itemLevel or item.itemLevel
+			itemDescription = itemDescription or itemInstant.description
+		end
+	return itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice, itemDescription
 end

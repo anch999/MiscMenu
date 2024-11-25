@@ -17,7 +17,6 @@ end
 
 function MiscMenu_OpenOptions()
 	if InterfaceOptionsFrame:GetWidth() < 850 then InterfaceOptionsFrame:SetWidth(850) end
-	MiscMenu_DropDownInitialize()
 	MM:DeleteEntryScrollFrameUpdate()
 end
 
@@ -73,19 +72,29 @@ function MM:CreateOptionsUI()
 					Name = "Minimap",
 					Lable = "Hide minimap icon",
 					OnClick = function()
-						self.db.Minimap = not self.db.Minimap
-						self:ToggleMainButton(self.db.EnableAutoHide)
+						self:ToggleMinimap()
 					end
 				},
 				{
 					Type = "Menu",
 					Name = "TxtSize",
-					Lable = "Menu text size"
+					Lable = "Menu text size",
+					Menu = {10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25}
 				},
 				{
 					Type = "Menu",
 					Name = "ProfileSelect2",
 					Lable = "Profile selection",
+					Menu = function()
+						local selections = {}
+						for name, _ in pairs(self.db.profileLists) do
+							tinsert(selections, name)
+						end
+						return selections, self.charDB.currentProfile
+					end,
+					Func = function(selection)
+						self.charDB.currentProfile = selection
+					end,
 				},
 				{
 					Type = "Slider",
@@ -111,7 +120,18 @@ function MM:CreateOptionsUI()
 			{
 				Type = "Menu",
 				Name = "ProfileSelect",
-				Lable = "Profile selection"
+				Lable = "Profile selection",
+				Menu = function()
+					local selections = {}
+					for name, _ in pairs(self.db.profileLists) do
+						tinsert(selections, name)
+					end
+					return selections, self.db.selectedProfile
+				end,
+				Func = function(selection)
+					self.db.selectedProfile = selection
+					self:DeleteEntryScrollFrameUpdate()
+				end,
 			},
 			},
 			Left = {
@@ -144,17 +164,39 @@ function MM:CreateOptionsUI()
 						Type = "Menu",
 						Name = "ActionBarSelect",
 						Lable = "Select Actionbar",
+						Menu = function()
+							local selections = {}
+							for name, _ in pairs(self.db.actionBarProfiles) do
+								tinsert(selections, name)
+							end
+							return selections, self.charDB.actionBar.profile
+						end,
+						Func = function(selection)
+							self.charDB.actionBar.profile = selection
+							self:SetActionBarProfile()
+						end,
 					},
 					{
 						Type = "Menu",
 						Name = "SelectActionBarProfile",
 						Lable = "Select Profile",
+						Menu = function()
+							local selections = {}
+							for name, _ in pairs(self.db.actionBarProfiles) do
+								tinsert(selections, name)
+							end
+							return selections, self.charDB.actionBar.profile
+						end,
+						Func = function(selection)
+							self.charDB.actionBar.profile = selection
+							self:SetActionBarProfile()
+						end,
 					},
 					{
 						Type = "Slider",
 						Name = "NumberOfActionbarButtons",
 						Lable = "Buttons",
-						MinMax = {1, 36},
+						MinMax = {1, 12},
 						Step = 1,
 						Size = {240,16},
 						OnShow = function(slider) slider:SetValue(self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons) end,
@@ -167,7 +209,7 @@ function MM:CreateOptionsUI()
 						Type = "Slider",
 						Name = "NumberOfActionbarRows",
 						Lable = "Rows",
-						MinMax = {1, (self:GetNumberButtons()/2)},
+						MinMax = {1, 12},
 						Step = 1,
 						Size = {240,16},
 						OnShow = function(slider) slider:SetValue(self:GetNumberRows()) end,
@@ -231,7 +273,7 @@ function MM:CreateOptionsUI()
 				self.db.profileLists[name] = {}
 				self.db.selectedProfile = name
 				self:DeleteEntryScrollFrameUpdate()
-				MiscMenu_DropDownInitialize()
+				self:UpdateDropDownMenus("MiscMenu")
 			end
 		end,
 		hasEditBox = 1,
@@ -260,7 +302,7 @@ function MM:CreateOptionsUI()
 				if self.charDB.currentProfile == self.db.selectedProfile then self.charDB.currentProfile = "default" end
 				self.db.selectedProfile = "default"
 				self:DeleteEntryScrollFrameUpdate()
-				MiscMenu_DropDownInitialize()
+				self:UpdateDropDownMenus("MiscMenu")
 			end
 		end,
 		timeout = 0,
@@ -286,73 +328,6 @@ function MM:AddItem()
 		tinsert(profile, {#profile+1, GetMacroInfo(ID), infoType})
 	end
 	ClearCursor()
-end
-
-function MiscMenu_Options_Profile_Select_Initialize()
-	local i, info, selected = 1
-	for name, _ in pairs(MM.db.profileLists) do
-		if name == MM.db.selectedProfile then
-			selected = i
-		end
-		i = i + 1
-		info = {
-			text = name;
-			func = function()
-				MM.db.selectedProfile = name
-				local thisID = this:GetID();
-				UIDropDownMenu_SetSelectedID(MiscMenuOptionsProfileSelectMenu, thisID)
-				MM:DeleteEntryScrollFrameUpdate()
-			end;
-		}
-			UIDropDownMenu_AddButton(info)
-	end
-	UIDropDownMenu_SetWidth(MiscMenuOptionsProfileSelectMenu, 150)
-	UIDropDownMenu_SetSelectedID(MiscMenuOptionsProfileSelectMenu, selected)
-end
-
-function MiscMenu_Options_Profile_Select2_Initialize()
-	local i, info, selected = 1
-	for name, _ in pairs(MM.db.profileLists) do
-		if name == MM.charDB.currentProfile then
-			selected = i
-		end
-		i = i + 1
-		info = {
-			text = name;
-			func = function()
-				MM.charDB.currentProfile = name
-				local thisID = this:GetID();
-				UIDropDownMenu_SetSelectedID(MiscMenuOptionsProfileSelect2Menu, thisID)
-			end;
-		}
-			UIDropDownMenu_AddButton(info)
-	end
-	UIDropDownMenu_SetWidth(MiscMenuOptionsProfileSelect2Menu, 150)
-	UIDropDownMenu_SetSelectedID(MiscMenuOptionsProfileSelect2Menu, selected)
-end
-
-function MiscMenu_Options_Menu_Initialize()
-	local info
-	for i = 10, 25 do
-		info = {
-			text = i;
-			func = function() 
-				MM.db.TxtSize = i 
-				local thisID = this:GetID();
-				UIDropDownMenu_SetSelectedID(MiscMenuOptionsTxtSizeMenu, thisID)
-			end;
-		}
-			UIDropDownMenu_AddButton(info)
-	end
-	UIDropDownMenu_SetWidth(MiscMenuOptionsTxtSizeMenu, 150)
-	UIDropDownMenu_SetSelectedID(MiscMenuOptionsTxtSizeMenu, MM.db.TxtSize - 9)
-end
-
-function MiscMenu_DropDownInitialize()
-	--Setup for Dropdown menus in the settings
-	UIDropDownMenu_Initialize(MiscMenuOptionsTxtSizeMenu, MiscMenu_Options_Menu_Initialize )
-	UIDropDownMenu_Initialize(MiscMenuOptionsProfileSelect2Menu, MiscMenu_Options_Profile_Select2_Initialize )
-	UIDropDownMenu_Initialize(MiscMenuOptionsProfileSelectMenu, MiscMenu_Options_Profile_Select_Initialize )
 end
 
 --Hook interface frame show to update options data
@@ -410,11 +385,16 @@ function MM:DeleteEntryScrollFrameCreate()
 				local text = link or profile[value][2].." (Macro)"
 				row.Text:SetText(text)
 				row:SetScript("OnClick", function()
+					local removedNumber
 					for num, v in pairs(profile) do
 						if v[1] == profile[value][1] then
 							tremove(profile, num)
 							self:DeleteEntryScrollFrameUpdate()
-						elseif v[1] > profile[value][1] then
+							removedNumber = v[1]
+						end
+					end
+					for _, v in pairs(profile) do
+						if v[1] > removedNumber then
 							v[1] = v[1] - 1
 						end
 					end

@@ -28,9 +28,10 @@ function MM:CreateActionBar()
     self.actionBar.FrameMover:Hide()
     self.charDB.actionBar.profile = self.charDB.actionBar.profile or "default"
     self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons = self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons or 12
-    local function createButtons(numButtons)
-        for i = 1, numButtons do
-            if not self.actionBar["button"..i] then 
+
+    local function createButtons()
+        for i = 1, 12 do
+            if not self.actionBar["button"..i] then
                 self.actionBar["button"..i] = CreateFrame("CheckButton", "$parentButton"..i, self.actionBar , "MiscMenuActionBarButtonTemplate")
                 self.actionBar["button"..i].ID = i
                 self.actionBar["button"..i]:RegisterForDrag("LeftButton")
@@ -45,25 +46,38 @@ function MM:CreateActionBar()
         end
     end
 
-    function MM:SetActionBarLayout()
+    function self:RefreshActionBars(numButtons)
+        for i = 1, 12 do
+            if numButtons >= i then
+                self.actionBar["button"..i]:Show()
+            else
+                self.actionBar["button"..i]:Hide()
+            end
+        end
+    end
+
+    function self:SetActionBarLayout()
         local rows = self:GetNumberRows()
         local numButtons = self:GetNumberButtons()
-        createButtons(numButtons)
+        createButtons()
+        self:RefreshActionBars(numButtons)
         local width, height = ((numButtons / rows) * (self.actionBar.button1:GetWidth() + 4))-2, ((rows) * (self.actionBar.button1:GetHeight() + 4))-2
         self.actionBar:SetSize(width, height)
         self.actionBar.FrameMover:SetSize(width, height)
-        local column = (numButtons/rows)
+        local column = (12/rows)
         for r = 1, rows do
             for i = ((r*column)-column+1), (r*column) do
-                if i == 1 then
-                    self.actionBar["button"..i]:ClearAllPoints()
-                    self.actionBar["button"..i]:SetPoint("TOPLEFT", self.actionBar)
-                elseif ((r*column)-column+1) == i then
-                    self.actionBar["button"..i]:ClearAllPoints()
-                    self.actionBar["button"..i]:SetPoint("TOP", self.actionBar["button"..(i-column)] , "BOTTOM", 0, -4)
-                else
-                    self.actionBar["button"..i]:ClearAllPoints()
-                    self.actionBar["button"..i]:SetPoint("LEFT", self.actionBar["button"..(i-1)], "RIGHT", 4, 0)
+                if self.actionBar["button"..i] then
+                    if i == 1 then
+                        self.actionBar["button"..i]:ClearAllPoints()
+                        self.actionBar["button"..i]:SetPoint("TOPLEFT", self.actionBar)
+                    elseif ((r*column)-column+1) == i then
+                        self.actionBar["button"..i]:ClearAllPoints()
+                        self.actionBar["button"..i]:SetPoint("TOP", self.actionBar["button"..(i-column)] , "BOTTOM", 0, -4)
+                    else
+                        self.actionBar["button"..i]:ClearAllPoints()
+                        self.actionBar["button"..i]:SetPoint("LEFT", self.actionBar["button"..(i-1)], "RIGHT", 4, 0)
+                    end
                 end
             end
         end
@@ -184,7 +198,11 @@ end
 function MM:SetAttribute(button)
     local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID])
     local name, icon, itemLink, text, start, duration, enable
-    if not ID then return end
+    if not ID then
+        button.Name:SetText()
+        button.Icon:SetTexture()
+        return
+    end
     if infoType == "spell" then
         name, _, icon = GetSpellInfo(ID)
         itemLink =  GetSpellLink(ID)
@@ -207,14 +225,20 @@ function MM:SetAttribute(button)
     button.Icon:SetTexture(icon)
     button:SetAttribute("type", infoType)
     button:SetAttribute(infoType, name)
+    if InterfaceOptionsFrame:IsVisible() then
+
+        self.options.NumberOfActionbarButtons.UpdateSlider(self:GetNumberButtons())
+        self.options.NumberOfActionbarRows.UpdateSlider(self:GetNumberRows())
+    end
 end
 
-function MM:FirstLoad()
+function MM:SetActionBarProfile()
     for i, _ in ipairs(self.db.actionBarProfiles[self.charDB.actionBar.profile]) do
         if self.actionBar["button"..i] then
             self:SetAttribute(self.actionBar["button"..i])
         end
     end
+    self:SetActionBarLayout()
 end
 
 function MM:ActionBarEvents(event, arg1, arg2)
@@ -229,7 +253,7 @@ function MM:GetNumberRows()
 end
 
 function MM:GetNumberButtons()
-    return self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons or 2
+    return self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons or 12
 end
 
 function MM:ToggleActionBar()
