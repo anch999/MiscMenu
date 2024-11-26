@@ -1,10 +1,7 @@
 local MM = LibStub("AceAddon-3.0"):GetAddon("MiscMenu")
-local CYAN =  "|cff00ffff"
-local WHITE = "|cffFFFFFF"
-
 
 function MM:CreateActionBars()
-    for i = 1, 4 do
+    for i = 1, self.db.NumberActionBars do
         self:CreateActionBar(i)
     end
 end
@@ -42,7 +39,7 @@ function MM:CreateActionBar(i)
     local function createButtons(i)
         for num = 1, 12 do
             if not self.actionBars[i]["button"..num] then
-                self.actionBars[i]["button"..num] = CreateFrame("CheckButton", "$parentButton"..num, self.actionBars[i] , "MiscMenuActionBarButtonTemplate")
+                self.actionBars[i]["button"..num] = CreateFrame("CheckButton", "$parent"..i.."Button"..num, self.actionBars[i] , "MiscMenuActionBarButtonTemplate")
                 self.actionBars[i]["button"..num].ID = num
                 self.actionBars[i]["button"..num]:RegisterForDrag("LeftButton")
                 self.actionBars[i]["button"..num]:SetScript("OnReceiveDrag", function() self:PlaceAction(self.actionBars[i]["button"..num], i) end)
@@ -97,7 +94,7 @@ end
 
 function MM:ActionBarUnlockFrame()
     self = MM
-    for i = 1, 4 do
+    for i = 1, self.db.NumberActionBars do
         if self.actionBars[i].FrameMover:IsVisible() then
             self.actionBars[i].FrameMover:Hide()
         else
@@ -127,10 +124,9 @@ function MM:ActionBarOnClick(button, i)
         local start = GetItemCooldown(ID)
         if start == 0 and not self:HasItem(ID) and C_VanityCollection.IsCollectionItemOwned(ID) then
            RequestDeliverVanityCollectionItem(ID)
-           self.actionBars[i]["button"..self.activeButtonID]:SetChecked(true)
-           self.activeButtonID = nil
+           self.activeButtonID:SetChecked(true)
         elseif start > 0 then
-            self.actionBars[i]["button"..self.activeButtonID]:SetChecked(true)
+            self.activeButtonID:SetChecked(true)
         else
             self.deleteItem = ID
         end
@@ -243,7 +239,7 @@ function MM:SetAttribute(button, i)
 end
 
 function MM:SetActionBarProfile()
-    for i = 1, 4 do
+    for i = 1, self.db.NumberActionBars do
         for num = 1, 12 do
             if self.actionBars[i]["button"..num] then
                 self:SetAttribute(self.actionBars[i]["button"..num], i)
@@ -276,7 +272,7 @@ function MM:GetSelectedBar()
 end
 
 function MM:ToggleActionBar()
-    for i = 1, 4 do
+    for i = 1, self.db.NumberActionBars do
         if self.charDB.actionBars[i].show then
             self.actionBars[i]:Show()
         else
@@ -290,3 +286,57 @@ function MM:InitializeActionBars()
     self:SetActionBarProfile()
     self:ToggleActionBar()
 end
+
+BINDING_HEADER_MISCMENUB1 = "MiscMenu - Action Bar 1"
+BINDING_HEADER_MISCMENUB2 = "MiscMenu - Action Bar 2"
+BINDING_HEADER_MISCMENUB3 = "MiscMenu - Action Bar 3"
+BINDING_HEADER_MISCMENUB4 = "MiscMenu - Action Bar 4"
+
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button1:LeftButton"] = "Button 1"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button2:LeftButton"] = "Button 2"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button3:LeftButton"] = "Button 3"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button4:LeftButton"] = "Button 4"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button5:LeftButton"] = "Button 5"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button6:LeftButton"] = "Button 6"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button7:LeftButton"] = "Button 7"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button8:LeftButton"] = "Button 8"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button9:LeftButton"] = "Button 9"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button10:LeftButton"] = "Button 10"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button11:LeftButton"] = "Button 11"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame1Button12:LeftButton"] = "Button 12"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button1:LeftButton"] = "Button 1"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button2:LeftButton"] = "Button 2"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button3:LeftButton"] = "Button 3"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button4:LeftButton"] = "Button 4"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button5:LeftButton"] = "Button 5"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button6:LeftButton"] = "Button 6"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button7:LeftButton"] = "Button 7"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button8:LeftButton"] = "Button 8"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button9:LeftButton"] = "Button 9"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button10:LeftButton"] = "Button 10"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button11:LeftButton"] = "Button 11"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame2Button12:LeftButton"] = "Button 12"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button1:LeftButton"] = "Button 1"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button2:LeftButton"] = "Button 2"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button3:LeftButton"] = "Button 3"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button4:LeftButton"] = "Button 4"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button5:LeftButton"] = "Button 5"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button6:LeftButton"] = "Button 6"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button7:LeftButton"] = "Button 7"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button8:LeftButton"] = "Button 8"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button9:LeftButton"] = "Button 9"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button10:LeftButton"] = "Button 10"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button11:LeftButton"] = "Button 11"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame3Button12:LeftButton"] = "Button 12"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button1:LeftButton"] = "Button 1"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button2:LeftButton"] = "Button 2"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button3:LeftButton"] = "Button 3"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button4:LeftButton"] = "Button 4"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button5:LeftButton"] = "Button 5"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button6:LeftButton"] = "Button 6"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button7:LeftButton"] = "Button 7"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button8:LeftButton"] = "Button 8"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button9:LeftButton"] = "Button 9"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button10:LeftButton"] = "Button 10"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button11:LeftButton"] = "Button 11"
+_G["BINDING_NAME_CLICK MiscMenuActionBarFrame4Button12:LeftButton"] = "Button 12"

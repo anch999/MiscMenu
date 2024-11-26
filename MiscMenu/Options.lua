@@ -165,7 +165,10 @@ function MM:CreateOptionsUI()
 						Name = "ActionBarSelect",
 						Lable = "Select Actionbar",
 						Menu = function()
-							local selections = {1,2,3,4}
+							local selections = {}
+							for i = 1, self.db.NumberActionBars do
+								tinsert(selections, i)
+							end
 							return selections, self:GetSelectedBar()
 						end,
 						Func = function(selection)

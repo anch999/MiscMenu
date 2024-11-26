@@ -3,8 +3,6 @@ local MM = LibStub("AceAddon-3.0"):NewAddon("MiscMenu", "AceTimer-3.0", "AceEven
 MISCMENU = MM
 MM.dewdrop = AceLibrary("Dewdrop-2.0")
 
-local CYAN =  "|cff00ffff"
-local WHITE = "|cffFFFFFF"
 MM.defaultIcon = "Interface\\Icons\\INV_Misc_Book_06"
 
 --Set Savedvariables defaults
@@ -17,6 +15,7 @@ local DefaultSettings  = {
     DeleteProflie      = { false },
     menuProfiles    = { { default = {} } },
     actionBarProfiles = { { default = {} } },
+    NumberActionBars = 4,
 }
 
 local CharDefaultSettings = {

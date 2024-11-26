@@ -1,0 +1,50 @@
+<Bindings>
+	<Binding name="CLICK MiscMenuActionBarFrame1Button1:LeftButton" header="MISCMENUB1" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button2:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button3:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button4:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button5:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button6:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button7:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button8:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button9:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button10:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button11:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame1Button12:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button1:LeftButton" header="MISCMENUB2" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button2:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button3:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button4:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button5:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button6:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button7:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button8:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button9:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button10:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button11:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame2Button12:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button1:LeftButton" header="MISCMENUB3" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button2:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button3:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button4:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button5:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button6:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button7:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button8:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button9:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button10:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button11:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame3Button12:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button1:LeftButton" header="MISCMENUB4" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button2:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button3:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button4:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button5:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button6:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button7:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button8:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button9:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button10:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button11:LeftButton" />
+	<Binding name="CLICK MiscMenuActionBarFrame4Button12:LeftButton" />
+</Bindings>
