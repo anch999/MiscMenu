@@ -87,13 +87,13 @@ function MM:CreateOptionsUI()
 					Lable = "Profile selection",
 					Menu = function()
 						local selections = {}
-						for name, _ in pairs(self.db.profileLists) do
+						for name, _ in pairs(self.db.menuProfiles) do
 							tinsert(selections, name)
 						end
-						return selections, self.charDB.currentProfile
+						return selections, self.charDB.menuSettings.currentProfile
 					end,
 					Func = function(selection)
-						self.charDB.currentProfile = selection
+						self.charDB.menuSettings.currentProfile = selection
 					end,
 				},
 				{
@@ -123,13 +123,13 @@ function MM:CreateOptionsUI()
 				Lable = "Profile selection",
 				Menu = function()
 					local selections = {}
-					for name, _ in pairs(self.db.profileLists) do
+					for name, _ in pairs(self.db.menuProfiles) do
 						tinsert(selections, name)
 					end
-					return selections, self.db.selectedProfile
+					return selections, self.charDB.menuSettings.currentProfile
 				end,
 				Func = function(selection)
-					self.db.selectedProfile = selection
+					self.charDB.menuSettings.currentProfile = selection
 					self:DeleteEntryScrollFrameUpdate()
 				end,
 			},
@@ -165,14 +165,12 @@ function MM:CreateOptionsUI()
 						Name = "ActionBarSelect",
 						Lable = "Select Actionbar",
 						Menu = function()
-							local selections = {}
-							for name, _ in pairs(self.db.actionBarProfiles) do
-								tinsert(selections, name)
-							end
-							return selections, self.charDB.actionBar.profile
+							local selections = {1,2,3,4}
+							return selections, self:GetSelectedBar()
 						end,
 						Func = function(selection)
-							self.charDB.actionBar.profile = selection
+							self.selectedBar = selection
+							self.options.ShowActionBar:SetChecked(self.charDB.actionBars[self.selectedBar].show)
 							self:SetActionBarProfile()
 						end,
 					},
@@ -185,10 +183,10 @@ function MM:CreateOptionsUI()
 							for name, _ in pairs(self.db.actionBarProfiles) do
 								tinsert(selections, name)
 							end
-							return selections, self.charDB.actionBar.profile
+							return selections, self.charDB.actionBars[self:GetSelectedBar()].profile
 						end,
 						Func = function(selection)
-							self.charDB.actionBar.profile = selection
+							self.charDB.actionBars[self:GetSelectedBar()].profile = selection
 							self:SetActionBarProfile()
 						end,
 					},
@@ -199,10 +197,10 @@ function MM:CreateOptionsUI()
 						MinMax = {1, 12},
 						Step = 1,
 						Size = {240,16},
-						OnShow = function(slider) slider:SetValue(self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons) end,
+						OnShow = function(slider) slider:SetValue(self.charDB.actionBars[self:GetSelectedBar()].numButtons or 12) end,
 						OnValueChanged = function(slider)
-							self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons = slider:GetValue()
-							self:SetActionBarLayout()
+							self.charDB.actionBars[self:GetSelectedBar()].numButtons = slider:GetValue()
+							self:SetActionBarLayout(self:GetSelectedBar())
 						end
 					},
 					{
@@ -212,13 +210,13 @@ function MM:CreateOptionsUI()
 						MinMax = {1, 12},
 						Step = 1,
 						Size = {240,16},
-						OnShow = function(slider) slider:SetValue(self:GetNumberRows()) end,
+						OnShow = function(slider) slider:SetValue(self:GetNumberRows(self:GetSelectedBar())) end,
 						OnValueChanged = function(slider)
 							local rows = slider:GetValue()
-							local numButtons = self:GetNumberButtons()
+							local numButtons = self:GetNumberButtons(self:GetSelectedBar())
 							if math.floor(numButtons/rows) == numButtons/rows then
-								self.db.actionBarProfiles[self.charDB.actionBar.profile].rows = rows
-								self:SetActionBarLayout()
+								self.charDB.actionBars[self:GetSelectedBar()].rows = rows
+								self:SetActionBarLayout(self:GetSelectedBar())
 							end
 						end
 					},
@@ -227,9 +225,13 @@ function MM:CreateOptionsUI()
 						Name = "ShowActionBar",
 						Lable = "Show Action Bar",
 						OnClick = function()
-							self.db.ShowActionBar = not self.db.ShowActionBar
+							local bar = self:GetSelectedBar()
+							self.charDB.actionBars[bar].show = not self.charDB.actionBars[bar].show
 							self:ToggleActionBar()
-						end
+						end,
+						OnShow = function(button)
+							button:SetChecked(self.charDB.actionBars[self:GetSelectedBar()].show)
+						end,
 					},
 				}
 				}
@@ -267,11 +269,11 @@ function MM:CreateOptionsUI()
 		end,
 		OnAccept = function()
 			local name = _G[this:GetParent():GetName().."EditBox"]:GetText()
-			if self.db.profileLists[name] then
+			if self.db.menuProfiles[name] then
 				DEFAULT_CHAT_FRAME:AddMessage("Can't add profile as a profile with the name already exists")
 			else
-				self.db.profileLists[name] = {}
-				self.db.selectedProfile = name
+				self.db.menuProfiles[name] = {}
+				self.charDB.menuSettings.currentProfile = name
 				self:DeleteEntryScrollFrameUpdate()
 				self:UpdateDropDownMenus("MiscMenu")
 			end
@@ -298,9 +300,8 @@ function MM:CreateOptionsUI()
 			if name == "default" then
 				DEFAULT_CHAT_FRAME:AddMessage("You can't delete the default profile")
 			else
-				self.db.profileLists[self.db.selectedProfile] = nil
-				if self.charDB.currentProfile == self.db.selectedProfile then self.charDB.currentProfile = "default" end
-				self.db.selectedProfile = "default"
+				self.db.menuProfiles[self.charDB.menuSettings.currentProfile] = nil
+				self.charDB.menuSettings.currentProfile = "default"
 				self:DeleteEntryScrollFrameUpdate()
 				self:UpdateDropDownMenus("MiscMenu")
 			end
@@ -314,7 +315,7 @@ end
 
 function MM:AddItem()
 	local infoType, ID , bookType = GetCursorInfo()
-	local profile = self.db.profileLists[self.db.selectedProfile]
+	local profile = self.db.menuProfiles[self.charDB.menuSettings.currentProfile]
 	if not infoType then return end
 	if infoType == "item" then
 		tinsert(profile, {#profile+1, ID, infoType})
@@ -371,7 +372,7 @@ function MM:DeleteEntryScrollFrameCreate()
 		self.deleteEntryScrollFrame.lable:SetText("Click to remove item/spell from list")
 
 	function MM:DeleteEntryScrollFrameUpdate()
-		local profile = self.db.profileLists[self.db.selectedProfile]
+		local profile = self.db.menuProfiles[self.charDB.menuSettings.currentProfile]
 		local maxValue = #profile
 		FauxScrollFrame_Update(self.deleteEntryScrollFrame.scrollBar, maxValue, MAX_ROWS, ROW_HEIGHT)
 		local offset = FauxScrollFrame_GetOffset(self.deleteEntryScrollFrame.scrollBar)

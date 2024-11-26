@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "SettingsCreater-1.0", 5
+local MAJOR, MINOR = "SettingsCreater-1.0", 6
 local SettingsCreater, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not SettingsCreater then return end -- No Upgrade needed.
@@ -82,6 +82,7 @@ local function CreateCheckButton(options, db, frame, addonName, setPoint, opTabl
     options[opTable.Name]:SetScript("OnClick", opTable.OnClick)
     options[opTable.Name]:SetScript("OnEnter", opTable.Tooltip or opTable.OnEnter)
     options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
+    options[opTable.Name]:SetScript("OnShow", function() if opTable.OnShow then opTable.OnShow(options[opTable.Name]) end end)
     options[opTable.Name]:SetChecked(db[opTable.Name] or false)
     return options[opTable.Name]
 end

@@ -12,20 +12,15 @@ local DefaultSettings  = {
     EnableAutoHide = { false },
     HideMenu        = { false, HideFrame = "MiscMenuStandaloneButton"},
     Minimap         = { false },
-    hideRandomPet   = { true },
     TxtSize         = 12,
     AutoMenu        = { false },
     DeleteProflie      = { false },
-    profileLists    = { { default = {} } },
-    selectedProfile = "default",
+    menuProfiles    = { { default = {} } },
     actionBarProfiles = { { default = {} } },
-    actionBars = {{}},
-    ShowActionBar = false
 }
 
 local CharDefaultSettings = {
-    currentProfile = "default",
-    actionBar = { {rows = 9, profile = "default" } },
+    menuSettings = { {currentProfile = "default"} },
     syncBarPosition = true
 }
 
@@ -41,24 +36,15 @@ function MM:OnInitialize()
 end
 
 function MM:OnEnable()
-    self:SetFramePos(self.standaloneButton, self.charDB.menuPos)
     self:InitializeMinimap()
-    self:ToggleMainButton(self.db.EnableAutoHide)
-    self.standaloneButton:SetScale(self.db.buttonScale or 1)
-    if not self.db.hideRandomPet then self:ToggleRandomPet() end
-    local realm = GetRealmName()
-    self.db.actionBars[realm] = self.db.actionBars[realm] or {[1] = {}}
-    self.db.actionBars[realm][1].FramePos = self.db.actionBars[realm][1].FramePos or {}
-    self.db.actionBars[realm][1].rows = self.db.actionBars[realm][1].rows or 9
-    self:CreateActionBar()
-    self:SetActionBarProfile()
+    self:InitializeStandaloneButton()
+    self:InitializeActionBars()
     self:RegisterEvent("UNIT_SPELLCAST_FAILED")
     self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     self:RegisterEvent("COMPANION_UPDATE")
     self:RegisterEvent("UI_ERROR_MESSAGE")
     self:RegisterEvent("EXECUTE_CHAT_LINE")
-    self:ToggleActionBar()
 end
 
 function MM:UNIT_SPELLCAST_SUCCEEDED(event, arg1, arg2)
@@ -85,6 +71,7 @@ end
 function MM:EXECUTE_CHAT_LINE(event, arg1, arg2)
     self:ActionBarEvents(event, arg1, arg2)
 end
+
 --[[
 MM:SlashCommand(msg):
 msg - takes the argument for the /miscmenu command so that the appropriate action can be performed
@@ -102,11 +89,6 @@ function MM:SlashCommand(msg)
         self:OptionsToggle()
     elseif cmd == "macromenu" then
         self:DewdropRegister(GetMouseFocus(), nil, arg)
-    elseif cmd == "unlockpet" then
-        self:UnlockRandomPet()
-    elseif cmd == "pet" then
-       self.db.hideRandomPet = not self.db.hideRandomPet
-       self:ToggleRandomPet()
     elseif cmd == "unlockactionbar" then
         self:ActionBarUnlockFrame()
     else

@@ -3,95 +3,106 @@ local CYAN =  "|cff00ffff"
 local WHITE = "|cffFFFFFF"
 
 
-function MM:CreateActionBar()
+function MM:CreateActionBars()
+    for i = 1, 4 do
+        self:CreateActionBar(i)
+    end
+end
 
-    self.actionBar = CreateFrame("FRAME", "MiscMenuActionBarFrame", UIParent )
-    self.actionBar:SetMovable(true)
-    self.actionBar:EnableMouse(true)
-    self.actionBar.FrameMover = CreateFrame("FRAME", "MiscMenuActionBarFrameMover", self.actionBar)
-    self.actionBar.FrameMover:SetPoint("CENTER",self.actionBar)
-    self.actionBar.FrameMover:EnableMouse(true)
-    self.actionBar.FrameMover:RegisterForDrag("LeftButton")
-    self.actionBar.FrameMover:SetScript("OnDragStart", function()
-        self.actionBar:StartMoving()
-    end)
-    self.actionBar.FrameMover:SetScript("OnDragStop", function()
-        self.actionBar:StopMovingOrSizing()
-        self.db.actionBarProfiles[self.charDB.actionBar.profile].FramePos = { self.actionBar:GetPoint() }
-        self.db.actionBarProfiles[self.charDB.actionBar.profile].FramePos[2] = "UIParent"
-    end)
-    self.actionBar.FrameMover:SetFrameStrata("FULLSCREEN")
-    self.actionBar.FrameMover.backTexture = self.actionBar.FrameMover:CreateTexture(nil, "BACKGROUND")
-    self.actionBar.FrameMover.backTexture:SetTexture(0,1,0,.5)
-    self.actionBar.FrameMover.backTexture:SetAllPoints()
-    self.actionBar.FrameMover.backTexture:SetPoint("CENTER",self.actionBar.FrameMover)
-    self.actionBar.FrameMover:Hide()
-    self.charDB.actionBar.profile = self.charDB.actionBar.profile or "default"
-    self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons = self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons or 12
+function MM:CreateActionBar(i)
+    self.actionBars = self.actionBars or {}
+    self.charDB.actionBars = self.charDB.actionBars or {}
+    self.charDB.actionBars[i] = self.charDB.actionBars[i] or {}
+    self.charDB.actionBars[i].profile = self.charDB.actionBars[i].profile or "default"
+    self.charDB.actionBars[i].numButtons = self.charDB.actionBars[i].numButtons or 12
+    self.charDB.actionBars[i].rows = self.charDB.actionBars[i].rows or 1
 
-    local function createButtons()
-        for i = 1, 12 do
-            if not self.actionBar["button"..i] then
-                self.actionBar["button"..i] = CreateFrame("CheckButton", "$parentButton"..i, self.actionBar , "MiscMenuActionBarButtonTemplate")
-                self.actionBar["button"..i].ID = i
-                self.actionBar["button"..i]:RegisterForDrag("LeftButton")
-                self.actionBar["button"..i]:SetScript("OnReceiveDrag", function() self:PlaceAction(self.actionBar["button"..i]) end)
-                self.actionBar["button"..i]:SetScript("OnDragStart", function() self:PickupAction(self.actionBar["button"..i]) end)
-                self.actionBar["button"..i]:SetScript("OnMouseDown", function() self:ActionBarOnClick(self.actionBar["button"..i]) end)
-                self.actionBar["button"..i]:SetScript("OnEnter", function(button) self:ItemTemplate_OnEnter(button) end)
-                self.actionBar["button"..i]:SetScript("OnLeave", function() GameTooltip:Hide() end)
-                self.actionBar["button"..i].defaultAnchor = true
-                self.db.actionBarProfiles[self.charDB.actionBar.profile][i] = self.db.actionBarProfiles[self.charDB.actionBar.profile][i] or {}
+    self.actionBars[i] = CreateFrame("FRAME", "MiscMenuActionBarFrame", UIParent )
+    self.actionBars[i]:SetMovable(true)
+    self.actionBars[i]:EnableMouse(true)
+    self.actionBars[i].FrameMover = CreateFrame("FRAME", "MiscMenuActionBarFrameMover", self.actionBars[i])
+    self.actionBars[i].FrameMover:SetPoint("CENTER",self.actionBars[i])
+    self.actionBars[i].FrameMover:EnableMouse(true)
+    self.actionBars[i].FrameMover:RegisterForDrag("LeftButton")
+    self.actionBars[i].FrameMover:SetScript("OnDragStart", function()
+        self.actionBars[i]:StartMoving()
+    end)
+    self.actionBars[i].FrameMover:SetScript("OnDragStop", function()
+        self.actionBars[i]:StopMovingOrSizing()
+        self.charDB.actionBars[i].FramePos = { self.actionBars[i]:GetPoint() }
+        self.charDB.actionBars[i].FramePos[2] = "UIParent"
+    end)
+    self.actionBars[i].FrameMover:SetFrameStrata("FULLSCREEN")
+    self.actionBars[i].FrameMover.backTexture = self.actionBars[i].FrameMover:CreateTexture(nil, "BACKGROUND")
+    self.actionBars[i].FrameMover.backTexture:SetTexture(0,1,0,.5)
+    self.actionBars[i].FrameMover.backTexture:SetAllPoints()
+    self.actionBars[i].FrameMover.backTexture:SetPoint("CENTER",self.actionBars[i].FrameMover)
+    self.actionBars[i].FrameMover:Hide()
+
+    local function createButtons(i)
+        for num = 1, 12 do
+            if not self.actionBars[i]["button"..num] then
+                self.actionBars[i]["button"..num] = CreateFrame("CheckButton", "$parentButton"..num, self.actionBars[i] , "MiscMenuActionBarButtonTemplate")
+                self.actionBars[i]["button"..num].ID = num
+                self.actionBars[i]["button"..num]:RegisterForDrag("LeftButton")
+                self.actionBars[i]["button"..num]:SetScript("OnReceiveDrag", function() self:PlaceAction(self.actionBars[i]["button"..num], i) end)
+                self.actionBars[i]["button"..num]:SetScript("OnDragStart", function() self:PickupAction(self.actionBars[i]["button"..num], nil, i) end)
+                self.actionBars[i]["button"..num]:SetScript("OnMouseDown", function() self:ActionBarOnClick(self.actionBars[i]["button"..num], i) end)
+                self.actionBars[i]["button"..num]:SetScript("OnEnter", function(button) self:ItemTemplate_OnEnter(button) end)
+                self.actionBars[i]["button"..num]:SetScript("OnLeave", function() GameTooltip:Hide() end)
+                self.actionBars[i]["button"..num].defaultAnchor = true
             end
         end
     end
 
     function self:RefreshActionBars(numButtons)
-        for i = 1, 12 do
+        for num = 1, 12 do
             if numButtons >= i then
-                self.actionBar["button"..i]:Show()
+                self.actionBars[i]["button"..num]:Show()
             else
-                self.actionBar["button"..i]:Hide()
+                self.actionBars[i]["button"..num]:Hide()
             end
         end
     end
 
-    function self:SetActionBarLayout()
-        local rows = self:GetNumberRows()
-        local numButtons = self:GetNumberButtons()
-        createButtons()
+    function self:SetActionBarLayout(i)
+        local rows = self:GetNumberRows(i)
+        local numButtons = self:GetNumberButtons(i)
+        createButtons(i)
         self:RefreshActionBars(numButtons)
-        local width, height = ((numButtons / rows) * (self.actionBar.button1:GetWidth() + 4))-2, ((rows) * (self.actionBar.button1:GetHeight() + 4))-2
-        self.actionBar:SetSize(width, height)
-        self.actionBar.FrameMover:SetSize(width, height)
+        local width, height = ((numButtons / rows) * (self.actionBars[i].button1:GetWidth() + 4))-2, ((rows) * (self.actionBars[i].button1:GetHeight() + 4))-2
+        self.actionBars[i]:SetSize(width, height)
+        self.actionBars[i].FrameMover:SetSize(width, height)
         local column = (12/rows)
         for r = 1, rows do
-            for i = ((r*column)-column+1), (r*column) do
-                if self.actionBar["button"..i] then
-                    if i == 1 then
-                        self.actionBar["button"..i]:ClearAllPoints()
-                        self.actionBar["button"..i]:SetPoint("TOPLEFT", self.actionBar)
-                    elseif ((r*column)-column+1) == i then
-                        self.actionBar["button"..i]:ClearAllPoints()
-                        self.actionBar["button"..i]:SetPoint("TOP", self.actionBar["button"..(i-column)] , "BOTTOM", 0, -4)
+            for num = ((r*column)-column+1), (r*column) do
+                if self.actionBars[i]["button"..num] then
+                    if num == 1 then
+                        self.actionBars[i]["button"..num]:ClearAllPoints()
+                        self.actionBars[i]["button"..num]:SetPoint("TOPLEFT", self.actionBars[i])
+                    elseif ((r*column)-column+1) == num then
+                        self.actionBars[i]["button"..num]:ClearAllPoints()
+                        self.actionBars[i]["button"..num]:SetPoint("TOP", self.actionBars[i]["button"..(num-column)] , "BOTTOM", 0, -4)
                     else
-                        self.actionBar["button"..i]:ClearAllPoints()
-                        self.actionBar["button"..i]:SetPoint("LEFT", self.actionBar["button"..(i-1)], "RIGHT", 4, 0)
+                        self.actionBars[i]["button"..num]:ClearAllPoints()
+                        self.actionBars[i]["button"..num]:SetPoint("LEFT", self.actionBars[i]["button"..(num-1)], "RIGHT", 4, 0)
                     end
                 end
             end
         end
     end
-    self:SetActionBarLayout()
-    self:SetFramePos(self.actionBar, self.db.actionBarProfiles[self.charDB.actionBar.profile].FramePos)
+    self:SetActionBarLayout(i)
+    self:SetFramePos(self.actionBars[i], self.charDB.actionBars[i].FramePos)
 end
 
 function MM:ActionBarUnlockFrame()
     self = MM
-    if self.actionBar.FrameMover:IsVisible() then
-        self.actionBar.FrameMover:Hide()
-    else
-        self.actionBar.FrameMover:Show()
+    for i = 1, 4 do
+        if self.actionBars[i].FrameMover:IsVisible() then
+            self.actionBars[i].FrameMover:Hide()
+        else
+            self.actionBars[i].FrameMover:Show()
+        end
     end
 end
 
@@ -107,19 +118,19 @@ function MM:SetButtonTimer(infoType, button, ID)
     end
 end
 
-function MM:ActionBarOnClick(button)
+function MM:ActionBarOnClick(button, i)
     if button:IsEnabled() == 0 then return end
-    local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID])
+    local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID])
     if not ID then button:SetChecked(true) end
-    self.activeButtonID = button.ID
+    self.activeButtonID = self.actionBars[i]["button"..button.ID]
     if  infoType == "item" then
         local start = GetItemCooldown(ID)
         if start == 0 and not self:HasItem(ID) and C_VanityCollection.IsCollectionItemOwned(ID) then
            RequestDeliverVanityCollectionItem(ID)
-           self.actionBar["button"..self.activeButtonID]:SetChecked(true)
+           self.actionBars[i]["button"..self.activeButtonID]:SetChecked(true)
            self.activeButtonID = nil
         elseif start > 0 then
-            self.actionBar["button"..self.activeButtonID]:SetChecked(true)
+            self.actionBars[i]["button"..self.activeButtonID]:SetChecked(true)
         else
             self.deleteItem = ID
         end
@@ -129,10 +140,10 @@ function MM:ActionBarOnClick(button)
         end
     end
     Timer.After(.5, function() MM:SetButtonTimer(infoType, button, ID) end)
-    self:PlaceAction(button)
+    self:PlaceAction(button, i)
 end
 
-function MM:PlaceAction(button)
+function MM:PlaceAction(button, i)
     local infoType, ID, bookType = GetCursorInfo()
     local swapInfo
     if infoType then
@@ -148,21 +159,21 @@ function MM:PlaceAction(button)
         elseif infoType == "macro" then
             ID = GetMacroInfo(ID)
         end
-        if self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID][1] then
-            swapInfo = {unpack(self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID])}
+        if self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID][1] then
+            swapInfo = {unpack(self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID])}
         end 
-        self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID] = {infoType, ID, bookType}
+        self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID] = {infoType, ID, bookType}
         ClearCursor()
-        Timer.After(.2, function() self:SetAttribute(button) end)
+        Timer.After(.2, function() self:SetAttribute(button, i) end)
     end
     if swapInfo then
-        self:PickupAction(button, swapInfo)
+        self:PickupAction(button, swapInfo, i)
     end
 
 end
 
-function MM:PickupAction(button, swapInfo)
-    local infoType, ID,  info = unpack(self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID])
+function MM:PickupAction(button, swapInfo, i)
+    local infoType, ID,  info = unpack(self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID])
     if swapInfo then
         infoType, ID,  info = unpack(swapInfo)
     else
@@ -190,13 +201,13 @@ function MM:PickupAction(button, swapInfo)
             end
             self.actionBarLock = true
         if not swapInfo then
-            self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID] = {nil, nil}
+            self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID] = {nil, nil}
         end
     end
 end
 
-function MM:SetAttribute(button)
-    local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBar.profile][button.ID])
+function MM:SetAttribute(button, i)
+    local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID])
     local name, icon, itemLink, text, start, duration, enable
     if not ID then
         button.Name:SetText()
@@ -226,40 +237,56 @@ function MM:SetAttribute(button)
     button:SetAttribute("type", infoType)
     button:SetAttribute(infoType, name)
     if InterfaceOptionsFrame:IsVisible() then
-
-        self.options.NumberOfActionbarButtons.UpdateSlider(self:GetNumberButtons())
-        self.options.NumberOfActionbarRows.UpdateSlider(self:GetNumberRows())
+        self.options.NumberOfActionbarButtons.UpdateSlider(self:GetNumberButtons(self:GetSelectedBar()))
+        self.options.NumberOfActionbarRows.UpdateSlider(self:GetNumberRows(self:GetSelectedBar()))
     end
 end
 
 function MM:SetActionBarProfile()
-    for i, _ in ipairs(self.db.actionBarProfiles[self.charDB.actionBar.profile]) do
-        if self.actionBar["button"..i] then
-            self:SetAttribute(self.actionBar["button"..i])
+    for i = 1, 4 do
+        for num = 1, 12 do
+            if self.actionBars[i]["button"..num] then
+                self:SetAttribute(self.actionBars[i]["button"..num], i)
+            end
+            self:SetActionBarLayout(i)
         end
     end
-    self:SetActionBarLayout()
 end
 
 function MM:ActionBarEvents(event, arg1, arg2)
     if self.activeButtonID then
-        self.actionBar["button"..self.activeButtonID]:SetChecked(false)
+        self.activeButtonID:SetChecked(false)
         self.activeButtonID = nil
     end
 end
 
-function MM:GetNumberRows()
-   return self.db.actionBarProfiles[self.charDB.actionBar.profile].rows or 12
+function MM:GetNumberRows(i)
+    self.charDB.actionBars[i].rows = self.charDB.actionBars[i].rows or 1
+    return self.charDB.actionBars[i].rows
 end
 
-function MM:GetNumberButtons()
-    return self.db.actionBarProfiles[self.charDB.actionBar.profile].numButtons or 12
+function MM:GetNumberButtons(i)
+    self.charDB.actionBars[i].numButtons = self.charDB.actionBars[i].numButtons or 12
+    return self.charDB.actionBars[i].numButtons
+end
+
+function MM:GetSelectedBar()
+    self.selectedBar = self.selectedBar or 1
+    return self.selectedBar
 end
 
 function MM:ToggleActionBar()
-    if self.db.ShowActionBar then
-        self.actionBar:Show()
-    else
-        self.actionBar:Hide()
+    for i = 1, 4 do
+        if self.charDB.actionBars[i].show then
+            self.actionBars[i]:Show()
+        else
+            self.actionBars[i]:Hide()
+        end
     end
+end
+
+function MM:InitializeActionBars()
+    self:CreateActionBars()
+    self:SetActionBarProfile()
+    self:ToggleActionBar()
 end
