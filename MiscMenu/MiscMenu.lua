@@ -14,7 +14,7 @@ local DefaultSettings  = {
     AutoMenu        = { false },
     DeleteProflie      = { false },
     menuProfiles    = { { default = {} } },
-    actionBarProfiles = { { default = {} } },
+    actionBarProfiles = { { default = {}, ["bar2"] = {}, ["bar3"] = {}, ["bar4"] = {} } },
     NumberActionBars = 4,
     SelfCast = { "none" },
 }
