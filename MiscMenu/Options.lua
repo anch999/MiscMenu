@@ -59,6 +59,20 @@ function MM:CreateOptionsUI()
 					Lable = "Open menu on mouse over",
 					OnClick = function() self.db.AutoMenu = not self.db.AutoMenu end
 				},
+				{
+					Type = "Menu",
+					Name = "SelfCast",
+					Lable = "Self Cast",
+					Tooltip = "Cast placeable items/spells on self",
+					Menu = function()
+						local selections = { "none", "alt", "shift", "ctrl", "always"}
+						return selections, self.db.SelfCast
+					end,
+					Func = function(selection)
+						self.db.SelfCast = selection
+						self:SetActionBarProfile()
+					end,
+				},
 			},
 			Right = {
 				{
@@ -66,12 +80,6 @@ function MM:CreateOptionsUI()
 					Name = "AutoDeleteItems",
 					Lable = "Delete vanity items after summoning",
 					OnClick = function() self.db.AutoDeleteItems = not self.db.AutoDeleteItems end
-				},
-				{
-					Type = "CheckButton",
-					Name = "SelfCast",
-					Lable = "Cast placeable items/spells on self",
-					OnClick = function() self.db.SelfCast = not self.db.SelfCast self:InitializeActionBars() end
 				},
 				{
 					Type = "CheckButton",

@@ -177,7 +177,7 @@ function MM:PickupAction(button, swapInfo, i)
         Timer.After(.5, function() CooldownFrame_Clear(button.Cooldown) end)
         button.Icon:SetTexture("")
         button.Name:SetText("")
-        button:SetAttribute("type1", nil)
+        button:SetAttribute("type", nil)
         button:SetAttribute(infoType, nil)
     end
     if not ID then button:SetChecked(false) end
@@ -232,11 +232,21 @@ function MM:SetAttribute(button, i)
     button.itemLink = itemLink
     button.Name:SetText(text)
     button.Icon:SetTexture(icon)
-    if self.db.SelfCast and infoType ~= "macro" then
+    button:SetAttribute("macro", nil)
+    button:SetAttribute(infoType, nil)
+    if self.db.SelfCast ~= "none" and infoType ~= "macro" then
         if infoType == "item" then
-            name = "/use [@player] "..name
+            if self.db.SelfCast == "always" then
+                name = "/use [@player] "..name
+            else
+                name = "/use [nomod:"..self.db.SelfCast.."] "..name.."; [mod:"..self.db.SelfCast..", @player] "..name
+            end
         elseif infoType == "spell" then
-            name = "/cast [@player] "..name
+            if self.db.SelfCast == "always" then
+                name = "/cast [@player] "..name
+            else
+                name = "/cast [nomod:"..self.db.SelfCast.."] "..name.."; [mod:"..self.db.SelfCast..", @player] "..name
+            end
         end
         button:SetAttribute("type", "macro")
         button:SetAttribute("macrotext", name)

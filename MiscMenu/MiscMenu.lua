@@ -16,7 +16,7 @@ local DefaultSettings  = {
     menuProfiles    = { { default = {} } },
     actionBarProfiles = { { default = {} } },
     NumberActionBars = 4,
-    SelfCast = { false },
+    SelfCast = { "none" },
 }
 
 local CharDefaultSettings = {
