@@ -105,10 +105,25 @@ function MM:AddEntry(ID, infoType, macroTxt)
 	if cooldown and cooldown > 0 then
 	text = name.." |cFF00FFFF("..cooldown.." ".. "mins" .. ")"
 	end
-	local secure = {
-	type1 = infoType,
-	[macroTxt or infoType] = name
-	}
+
+    local secure = {
+        type1 = infoType,
+        [macroTxt or infoType] = name
+    }
+
+    if self.db.SelfCast and infoType ~= "macro" then
+        if infoType == "item" then
+            name = "/use [@player] "..name
+        elseif infoType == "spell" then
+            name = "/cast [@player] "..name
+        end
+        secure = {
+            type1 = "macro",
+            macrotext = name,
+        }
+    end
+
+
 
     MM.dewdrop:AddLine(
             'text', text,

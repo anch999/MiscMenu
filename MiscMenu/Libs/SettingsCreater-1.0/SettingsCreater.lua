@@ -115,6 +115,7 @@ local function CreateDropDownMenu(options, db, frame, addonName, setPoint, opTab
     options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
     options[opTable.Name].Menu = { options, opTable, db }
     options[opTable.Name]:SetScript("OnShow", function() UIDropDownMenu_Initialize(options[opTable.Name], InitializeDropDown) end )
+    options[opTable.Name].updateMenu = function() UIDropDownMenu_Initialize(options[opTable.Name], InitializeDropDown) end
     dropDownList[addonName] = dropDownList[addonName] or {}
     if opTable.Menu then
         tinsert(dropDownList[addonName], options[opTable.Name])
@@ -152,9 +153,6 @@ local function CreateSlider(options, db, frame, addonName, setPoint, opTable)
     options[opTable.Name].editBox:SetScript("OnEnterPressed", function()
         options[opTable.Name]:SetValue(round(options[opTable.Name].editBox:GetText(),2))
     end)
-    options[opTable.Name].UpdateSlider = function(value)
-        options[opTable.Name]:SetValue(round(value,2))
-    end
     return options[opTable.Name]
 end
 

@@ -69,6 +69,12 @@ function MM:CreateOptionsUI()
 				},
 				{
 					Type = "CheckButton",
+					Name = "SelfCast",
+					Lable = "Cast placeable items/spells on self",
+					OnClick = function() self.db.SelfCast = not self.db.SelfCast self:InitializeActionBars() end
+				},
+				{
+					Type = "CheckButton",
 					Name = "Minimap",
 					Lable = "Hide minimap icon",
 					OnClick = function()
@@ -174,6 +180,7 @@ function MM:CreateOptionsUI()
 						Func = function(selection)
 							self.selectedBar = selection
 							self.options.ShowActionBar:SetChecked(self.charDB.actionBars[self.selectedBar].show)
+							self.options.SelectActionBarProfile:updateMenu()
 							self:SetActionBarProfile()
 						end,
 					},

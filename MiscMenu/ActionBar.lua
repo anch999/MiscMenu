@@ -119,6 +119,7 @@ function MM:ActionBarOnClick(button, i)
     if button:IsEnabled() == 0 then return end
     local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBars[i].profile][button.ID])
     if not ID then button:SetChecked(true) end
+    if button.instantCast then button:SetChecked(false) end
     self.activeButtonID = self.actionBars[i]["button"..button.ID]
     if  infoType == "item" then
         local start = GetItemCooldown(ID)
@@ -227,11 +228,23 @@ function MM:SetAttribute(button, i)
     if start then
         CooldownFrame_SetTimer(button.Cooldown, start, duration, enable)
     end
+    button.instantCast = not start and true or false
     button.itemLink = itemLink
     button.Name:SetText(text)
     button.Icon:SetTexture(icon)
-    button:SetAttribute("type", infoType)
-    button:SetAttribute(infoType, name)
+    if self.db.SelfCast and infoType ~= "macro" then
+        if infoType == "item" then
+            name = "/use [@player] "..name
+        elseif infoType == "spell" then
+            name = "/cast [@player] "..name
+        end
+        button:SetAttribute("type", "macro")
+        button:SetAttribute("macrotext", name)
+    else
+        button:SetAttribute("type", infoType)
+        button:SetAttribute(infoType, name)
+    end
+
     if InterfaceOptionsFrame:IsVisible() then
         self.options.NumberOfActionbarButtons.UpdateSlider(self:GetNumberButtons(self:GetSelectedBar()))
         self.options.NumberOfActionbarRows.UpdateSlider(self:GetNumberRows(self:GetSelectedBar()))
@@ -250,7 +263,7 @@ function MM:SetActionBarProfile()
 end
 
 function MM:ActionBarEvents(event, arg1, arg2)
-    if self.activeButtonID then
+    if self.activeButtonID and self.activeButtonID:GetChecked() then
         self.activeButtonID:SetChecked(false)
         self.activeButtonID = nil
     end
