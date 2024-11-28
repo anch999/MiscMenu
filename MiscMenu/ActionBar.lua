@@ -166,7 +166,6 @@ function MM:PlaceAction(button, i)
     if swapInfo then
         self:PickupAction(button, swapInfo, i)
     end
-
 end
 
 function MM:PickupAction(button, swapInfo, i)
@@ -177,8 +176,11 @@ function MM:PickupAction(button, swapInfo, i)
         Timer.After(.5, function() CooldownFrame_Clear(button.Cooldown) end)
         button.Icon:SetTexture("")
         button.Name:SetText("")
+        button.itemID = nil
+        button.itemLink = nil
         button:SetAttribute("type", nil)
         button:SetAttribute(infoType, nil)
+        SetItemButtonCount(button)
     end
     if not ID then button:SetChecked(false) end
     if ID then
@@ -209,6 +211,8 @@ function MM:SetAttribute(button, i)
     if not ID then
         button.Name:SetText()
         button.Icon:SetTexture()
+        button.itemID = nil
+        button.itemLink = nil
         return
     end
     if infoType == "spell" then
@@ -230,6 +234,7 @@ function MM:SetAttribute(button, i)
     end
     button.instantCast = not start and true or false
     button.itemLink = itemLink
+    button.itemID = ID
     button.Name:SetText(text)
     button.Icon:SetTexture(icon)
     button:SetAttribute("macro", nil)
@@ -255,6 +260,8 @@ function MM:SetAttribute(button, i)
         button:SetAttribute(infoType, name)
     end
 
+    self:ActionBarBagUpdate()
+
     if InterfaceOptionsFrame:IsVisible() then
         self.options.NumberOfActionbarButtons.UpdateSlider(self:GetNumberButtons(self:GetSelectedBar()))
         self.options.NumberOfActionbarRows.UpdateSlider(self:GetNumberRows(self:GetSelectedBar()))
@@ -268,6 +275,32 @@ function MM:SetActionBarProfile()
                 self:SetAttribute(self.actionBars[i]["button"..num], i)
             end
             self:SetActionBarLayout(i)
+        end
+    end
+end
+
+function MM:ActionBarBagUpdate()
+    local itemList = {}
+    for bagID = 0, 4 do
+        local numSlots = GetContainerNumSlots(bagID)
+        if numSlots ~= 0 then
+            for slot = 1, numSlots do
+                local itemCount = select(2,GetContainerItemInfo(bagID, slot))
+                if itemCount and itemCount > 1 then
+                    itemList[GetContainerItemID(bagID, slot)] = itemList[GetContainerItemID(bagID, slot)] and itemList[GetContainerItemID(bagID, slot)] + itemCount or itemCount
+                end
+            end
+        end
+    end
+    for i = 1, self.db.NumberActionBars do
+        for num = 1, 12 do
+            if self.actionBars[i]["button"..num] then
+                if itemList[self.actionBars[i]["button"..num].itemID] then
+                    SetItemButtonCount(self.actionBars[i]["button"..num], itemList[self.actionBars[i]["button"..num].itemID])
+                else
+                    SetItemButtonCount(self.actionBars[i]["button"..num])
+                end
+            end
         end
     end
 end
@@ -308,6 +341,7 @@ function MM:InitializeActionBars()
     self:CreateActionBars()
     self:SetActionBarProfile()
     self:ToggleActionBar()
+    self:ActionBarBagUpdate()
 end
 
 BINDING_HEADER_MISCMENUB1 = "MiscMenu - Action Bar 1"

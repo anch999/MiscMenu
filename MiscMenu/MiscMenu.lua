@@ -45,6 +45,7 @@ function MM:OnEnable()
     self:RegisterEvent("COMPANION_UPDATE")
     self:RegisterEvent("UI_ERROR_MESSAGE")
     self:RegisterEvent("EXECUTE_CHAT_LINE")
+    self:RegisterEvent("BAG_UPDATE")
 end
 
 function MM:UNIT_SPELLCAST_SUCCEEDED(event, arg1, arg2)
@@ -70,6 +71,10 @@ end
 
 function MM:EXECUTE_CHAT_LINE(event, arg1, arg2)
     self:ActionBarEvents(event, arg1, arg2)
+end
+
+function MM:BAG_UPDATE(event, arg1, arg2)
+    self:ActionBarBagUpdate(event, arg1, arg2)
 end
 
 --[[
