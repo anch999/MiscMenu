@@ -52,21 +52,21 @@ function MM:CreateActionBar(i)
         end
     end
 
-    function self:RefreshActionBars(numButtons)
+    function self:RefreshActionBars(numButtons, i)
         for num = 1, 12 do
-            if numButtons >= i then
-                self.actionBars[i]["button"..num]:Show()
-            else
+            if num > numButtons then
                 self.actionBars[i]["button"..num]:Hide()
+            else
+                self.actionBars[i]["button"..num]:Show()
             end
         end
     end
-
+    ------------------------------------------------------------------------------------------------------
     function self:SetActionBarLayout(i)
         local rows = self:GetNumberRows(i)
         local numButtons = self:GetNumberButtons(i)
         createButtons(i)
-        self:RefreshActionBars(numButtons)
+        self:RefreshActionBars(numButtons, i)
         local width, height = ((numButtons / rows) * (self.actionBars[i].button1:GetWidth() + 4))-2, ((rows) * (self.actionBars[i].button1:GetHeight() + 4))-2
         self.actionBars[i]:SetSize(width, height)
         self.actionBars[i].FrameMover:SetSize(width, height)
@@ -88,6 +88,7 @@ function MM:CreateActionBar(i)
             end
         end
     end
+    ------------------------------------------------------------------------------------------------------
     self:SetActionBarLayout(i)
     self:SetFramePos(self.actionBars[i], self.charDB.actionBars[i].FramePos)
 end
