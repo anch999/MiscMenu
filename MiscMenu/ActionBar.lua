@@ -305,6 +305,11 @@ function MM:ActionBarBagUpdate()
     end
 end
 
+function MM:ActionBarBagUpdateTimer()
+    self:CancelTimer(self.barUpdateTimer)
+    self.barUpdateTimer = self:ScheduleTimer("ActionBarBagUpdate", .1)
+end
+
 function MM:ActionBarEvents(event, arg1, arg2)
     if self.activeButtonID and self.activeButtonID:GetChecked() then
         self.activeButtonID:SetChecked(false)

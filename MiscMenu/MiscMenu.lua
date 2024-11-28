@@ -74,7 +74,7 @@ function MM:EXECUTE_CHAT_LINE(event, arg1, arg2)
 end
 
 function MM:BAG_UPDATE(event, arg1, arg2)
-    self:ActionBarBagUpdate(event, arg1, arg2)
+    self:ActionBarBagUpdateTimer(event, arg1, arg2)
 end
 
 --[[
