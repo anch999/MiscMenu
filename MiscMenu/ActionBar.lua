@@ -10,7 +10,7 @@ function MM:CreateActionBar(i)
     self.actionBars = self.actionBars or {}
     self.charDB.actionBars = self.charDB.actionBars or {}
     self.charDB.actionBars[i] = self.charDB.actionBars[i] or {}
-    self.charDB.actionBars[i].profile = self.charDB.actionBars[i].profile or "default"
+    self.charDB.actionBars[i].profile = self.charDB.actionBars[i].profile or ("Bar"..i)
     self.charDB.actionBars[i].numButtons = self.charDB.actionBars[i].numButtons or 12
     self.charDB.actionBars[i].rows = self.charDB.actionBars[i].rows or 1
 
@@ -342,7 +342,24 @@ function MM:ToggleActionBar()
     end
 end
 
+function MM:InitializeActionBarProfiles()
+    if self.db.actionBarProfiles then return end
+    self.db.actionBarProfiles = self.db.actionBarProfiles or {}
+    for i = 1, 4 do
+        self:AddActionBarProfile("Bar"..i)
+    end
+end
+
+function MM:AddActionBarProfile(profileName)
+    if self.db.actionBarProfiles[profileName] then DEFAULT_CHAT_FRAME:AddMessage("A profile with this name already exists") return end
+    self.db.actionBarProfiles[profileName] = {}
+    for i = 1, 12 do
+        tinsert(self.db.actionBarProfiles[profileName], {})
+    end
+end
+
 function MM:InitializeActionBars()
+    self:InitializeActionBarProfiles()
     self:CreateActionBars()
     self:SetActionBarProfile()
     self:ToggleActionBar()

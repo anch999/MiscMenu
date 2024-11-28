@@ -62,6 +62,11 @@ local function SetOnEnter(options, frame, addonName, db, opTable)
     if opTable.OnEnter then opTable.OnEnter() end
 end
 
+--Hook interface frame show to update options data
+InterfaceOptionsFrame:HookScript("OnShow", function()
+	if InterfaceOptionsFrame:GetWidth() < 850 then InterfaceOptionsFrame:SetWidth(850) end
+end)
+
 --[[ DB = Name of the db you want to setup
 CheckBox = Global name of the checkbox if it has one and first numbered table entry is the boolean
 Text = Global name of where the text and first numbered table entry is the default text 

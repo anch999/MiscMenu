@@ -71,6 +71,7 @@ function MM:RemoveItem(arg2)
             if strfind(arg2, itemCast) then
                 local found, bag, slot = self:HasItem(self.deleteItem)
                 if found and C_VanityCollection.IsCollectionItemOwned(self.deleteItem) and self:IsRealmbound(bag, slot) then
+                    ClearCursor()
                     PickupContainerItem(bag, slot)
                     DeleteCursorItem()
                 end

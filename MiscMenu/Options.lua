@@ -349,13 +349,6 @@ function MM:AddItem()
 	ClearCursor()
 end
 
---Hook interface frame show to update options data
-InterfaceOptionsFrame:HookScript("OnShow", function()
-	if InterfaceOptionsFrame and MiscMenuOptionsFrame:IsVisible() then
-		MiscMenu_OpenOptions()
-	end
-end)
-
 ------------------ScrollFrameTooltips---------------------------
 function MM:DeleteEntryScrollFrameCreate()
 
