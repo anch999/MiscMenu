@@ -67,9 +67,13 @@ function MM:CreateActionBar(i)
         local numButtons = self:GetNumberButtons(i)
         createButtons(i)
         self:RefreshActionBars(numButtons, i)
-        local width, height = ((numButtons / rows) * (self.actionBars[i].button1:GetWidth() + 4))-2, ((rows) * (self.actionBars[i].button1:GetHeight() + 4))-2
+        local buttonWidth = self.actionBars[i].button1:GetWidth() + 4
+        local width = buttonWidth < ((numButtons / rows) * buttonWidth)-2 and ((numButtons / rows) * buttonWidth)-2 or buttonWidth
+        local buttonHeight = self.actionBars[i].button1:GetHeight() + 4
+        local height = buttonHeight < (((rows) * (buttonHeight))-2) and (((rows) * (buttonHeight))-2) or buttonHeight
         self.actionBars[i]:SetSize(width, height)
-        self.actionBars[i].FrameMover:SetSize(width, height)
+        self.actionBars[i].FrameMover:SetHeight(height)
+        self.actionBars[i].FrameMover:SetWidth(width)
         local column = (12/rows)
         for r = 1, rows do
             for num = ((r*column)-column+1), (r*column) do
@@ -180,7 +184,6 @@ function MM:PickupAction(button, swapInfo, i)
         button.itemID = nil
         button.itemLink = nil
         button:SetAttribute("type", nil)
-        button:SetAttribute(infoType, nil)
         SetItemButtonCount(button)
     end
     if not ID then button:SetChecked(false) end
