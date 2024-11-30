@@ -41,15 +41,20 @@ function MM:OnEnable()
     self:RegisterEvent("UNIT_SPELLCAST_FAILED")
     self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
+    self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+    self:RegisterEvent("UPDATE_BINDINGS")
     self:RegisterEvent("COMPANION_UPDATE")
     self:RegisterEvent("UI_ERROR_MESSAGE")
-    self:RegisterEvent("EXECUTE_CHAT_LINE")
     self:RegisterEvent("BAG_UPDATE")
 end
 
 function MM:UNIT_SPELLCAST_SUCCEEDED(event, arg1, arg2)
     self:ActionBarEvents(event, arg1, arg2)
 	self:RemoveItem(arg2)
+end
+
+function MM:UNIT_SPELLCAST_CHANNEL_START(event, arg1, arg2)
+    self:ActionBarEvents(event, arg1, arg2)
 end
 
 function MM:UNIT_SPELLCAST_FAILED(event, arg1, arg2)
@@ -64,11 +69,11 @@ function MM:COMPANION_UPDATE(event, arg1, arg2)
     self:ActionBarEvents(event, arg1, arg2)
 end
 
-function MM:UI_ERROR_MESSAGE(event, arg1, arg2)
-    self:ActionBarEvents(event, arg1, arg2)
+function MM:UPDATE_BINDINGS(event, arg1, arg2)
+    self:ActionBarUpdateBindings(event, arg1, arg2)
 end
 
-function MM:EXECUTE_CHAT_LINE(event, arg1, arg2)
+function MM:UI_ERROR_MESSAGE(event, arg1, arg2)
     self:ActionBarEvents(event, arg1, arg2)
 end
 
@@ -82,7 +87,7 @@ msg - takes the argument for the /miscmenu command so that the appropriate actio
 If someone types /miscmenu, bring up the options box
 ]]
 function MM:SlashCommand(msg)
-    local cmd, arg = string.split(" ", msg, 2)
+    local cmd, arg = string.split(" ", msg, 3)
 	cmd = string.lower(cmd) or nil
 	arg = arg or nil
     if cmd == "reset" then
@@ -93,9 +98,27 @@ function MM:SlashCommand(msg)
         self:OptionsToggle()
     elseif cmd == "macromenu" then
         self:DewdropRegister(GetMouseFocus(), nil, arg)
+    elseif cmd == "macromenuright" then
+        self:MacroMenuClick(arg)
     elseif cmd == "unlockactionbar" then
         self:ActionBarUnlockFrame()
     else
         self:ToggleStandaloneButton()
+    end
+end
+
+function MM:MacroMenuClick(arg)
+    local button = GetMouseFocus()
+    button.miscmenu = button.miscmenu or {}
+    button.miscmenu.Profile =  arg
+    if not button.miscmenu.Function then
+    button.miscmenu.Function = function(btn, btnclick)
+        if button.miscmenu.Profile and btnclick == "RightButton" then
+            self:DewdropRegister(button, nil, button.miscmenu.Profile)
+        end
+        button.miscmenu.Profile = nil
+    end
+    button:HookScript("OnClick", button.miscmenu.Function)
+    button.miscmenu.Function(nil, "RightButton")
     end
 end

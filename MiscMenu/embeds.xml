@@ -20,6 +20,7 @@
 
 <Script file="MiscMenu.lua"/>
 <Script file="Options.lua"/>
+<Script file="KeyBindings.lua"/>
 <Script file="MiscMenuUI.lua"/>
 <Script file="Minimap.lua"/>
 <Script file="ActionBar.lua"/>
