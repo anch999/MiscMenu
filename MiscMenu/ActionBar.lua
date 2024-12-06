@@ -58,7 +58,7 @@ local function createButtons(self, bar)
             self.actionBars[bar]["button"..num]:RegisterForDrag("LeftButton")
             self.actionBars[bar]["button"..num]:SetScript("OnReceiveDrag", function() self:PlaceAction(self.actionBars[bar]["button"..num], bar) end)
             self.actionBars[bar]["button"..num]:SetScript("OnDragStart", function() self:PickupAction(self.actionBars[bar]["button"..num], nil, bar) end)
-            self.actionBars[bar]["button"..num]:SetScript("OnMouseDown", function() self:ActionBarOnClick(self.actionBars[bar]["button"..num], bar) end)
+            self.actionBars[bar]["button"..num]:SetScript("OnMouseDown", function() self:ActionButtonOnClick(bar, self.actionBars[bar]["button"..num]) end)
             self.actionBars[bar]["button"..num]:SetScript("OnEnter", function(button) self:ItemTemplate_OnEnter(button) end)
             self.actionBars[bar]["button"..num]:SetScript("OnLeave", function() GameTooltip:Hide() end)
             self.actionBars[bar]["button"..num].defaultAnchor = true
@@ -120,24 +120,28 @@ function MM:SetButtonTimer(infoType, button, ID)
     end
 end
 
-function MM:ActionBarOnClick(button, bar)
+function MM:ActionButtonOnClick(bar, button)
     if button:IsEnabled() == 0 then return end
     local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBars[bar].profile][button.ID])
     self.activeButtonID = button
+    self.spellCastStarted = nil
+    --self.barUpdateTimer = self:ScheduleTimer("ActionBarClearButtonCheck", .5)
+    self.barUpdateTimer.button = button
     if  infoType == "item" then
         local start = GetItemCooldown(ID)
         if start == 0 and not self:HasItem(ID) and C_VanityCollection.IsCollectionItemOwned(ID) then
-           RequestDeliverVanityCollectionItem(ID)
-        elseif start > 0 then
-            button:SetChecked(true)
+           RequestDeliverVanityCollectionItem(VANITY_SPELL_REFERENCE[ID] or ID)
+           Timer.After(.2, function() button:SetChecked(false) end)
         else
             self.deleteItem = ID
         end
     elseif infoType == "spell" then
         if not CA_IsSpellKnown(ID) and C_VanityCollection.IsCollectionItemOwned(VANITY_SPELL_REFERENCE[ID] or ID) then
             RequestDeliverVanityCollectionItem(VANITY_SPELL_REFERENCE[ID] or ID)
+            Timer.After(.2, function() button:SetChecked(false) end)
         end
     end
+
     Timer.After(.5, function() MM:SetButtonTimer(infoType, button, ID) end)
     self:PlaceAction(button, bar)
 end
@@ -281,23 +285,12 @@ function MM:SetActionBarProfile()
 end
 
 function MM:ActionBarBagUpdate()
-    local itemList = {}
-    for bagID = 0, 4 do
-        local numSlots = GetContainerNumSlots(bagID)
-        if numSlots ~= 0 then
-            for slot = 1, numSlots do
-                local itemCount = select(2,GetContainerItemInfo(bagID, slot))
-                if itemCount and itemCount > 1 then
-                    itemList[GetContainerItemID(bagID, slot)] = itemList[GetContainerItemID(bagID, slot)] and itemList[GetContainerItemID(bagID, slot)] + itemCount or itemCount
-                end
-            end
-        end
-    end
     for bar = 1, self.db.NumberActionBars do
         for num = 1, 12 do
             if self.actionBars[bar]["button"..num] then
-                if itemList[self.actionBars[bar]["button"..num].itemID] then
-                    SetItemButtonCount(self.actionBars[bar]["button"..num], itemList[self.actionBars[bar]["button"..num].itemID])
+                local count = GetItemCount(self.actionBars[bar]["button"..num].itemID)
+                if count and count > 0 then
+                    SetItemButtonCount(self.actionBars[bar]["button"..num], count)
                 else
                     SetItemButtonCount(self.actionBars[bar]["button"..num])
                 end
@@ -316,6 +309,20 @@ function MM:ActionBarEvents(event, arg1, arg2)
         self.activeButtonID:SetChecked(false)
         self.activeButtonID = nil
     end
+end
+
+function MM:ActionBarSpellCastStart(event, arg1, arg2)
+    self.spellCastStarted = true
+end
+
+function MM:ActionBarClearButtonCheck()
+    if not self.spellCastStarted then
+        self.barUpdateTimer.button:SetChecked(false)
+    end
+end
+
+function MM:ActionBarItemUsed()
+
 end
 
 function MM:ActionBarUpdateBindings(event, arg1, arg2)

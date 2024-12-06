@@ -77,7 +77,7 @@ function SettingsCreater:SetupDB(dbName, defaultList)
     for table, v in pairs(defaultList) do
         if not db[table] and db[table] ~= false then
             if type(v) == "table" then
-                db[table] = v[1]
+                db[table] = v[1] or v
             else
                 db[table] = v
             end

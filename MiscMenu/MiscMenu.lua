@@ -42,10 +42,13 @@ function MM:OnEnable()
     self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")
     self:RegisterEvent("UNIT_SPELLCAST_CHANNEL_START")
+    self:RegisterEvent("CURRENT_SPELL_CAST_CHANGED")
+    self:RegisterEvent("UNIT_SPELLCAST_START")
     self:RegisterEvent("UPDATE_BINDINGS")
     self:RegisterEvent("COMPANION_UPDATE")
     self:RegisterEvent("UI_ERROR_MESSAGE")
     self:RegisterEvent("BAG_UPDATE")
+    self:RegisterEvent("ITEM_USED")
 end
 
 function MM:UNIT_SPELLCAST_SUCCEEDED(event, arg1, arg2)
@@ -55,6 +58,18 @@ end
 
 function MM:UNIT_SPELLCAST_CHANNEL_START(event, arg1, arg2)
     self:ActionBarEvents(event, arg1, arg2)
+end
+
+function MM:UNIT_SPELLCAST_START(event, arg1, arg2)
+    self:ActionBarSpellCastStart(event, arg1, arg2)
+end
+
+function MM:CURRENT_SPELL_CAST_CHANGED(event, arg1, arg2)
+    --self:ActionBarSpellCastStart(event, arg1, arg2)
+end
+
+function MM:ITEM_USED(event, arg1, arg2)
+    self:ActionBarItemUsed(event, arg1, arg2)
 end
 
 function MM:UNIT_SPELLCAST_FAILED(event, arg1, arg2)

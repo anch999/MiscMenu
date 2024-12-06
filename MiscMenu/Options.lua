@@ -1,4 +1,5 @@
 local MM = LibStub("AceAddon-3.0"):GetAddon("MiscMenu")
+local WHITE = "|cffFFFFFF"
 --Round number
 local function round(num, idp)
 	local mult = 10 ^ (idp or 0)
@@ -393,9 +394,20 @@ function MM:DeleteEntryScrollFrameCreate()
 			self.deleteEntryScrollFrame.rows[i]:Hide()
 			if value <= maxValue then
 				local row = self.deleteEntryScrollFrame.rows[i]
-				local link = (profile[value][3] == "item") and select(2,self:GetItemInfo(profile[value][2])) or (profile[value][3] == "spell") and GetSpellLink(profile[value][2]) or (profile[value][3] == "macro") and nil
-				local text = link or profile[value][2].." (Macro)"
-				row.Text:SetText(text)
+				local name, link, quality, icon
+				if profile[value][3] == "item" then
+					local item = {self:GetItemInfo(profile[value][2])}
+					name, link, quality, icon = item[1], item[2], item[3], item[10]
+					name = select(4,GetItemQualityColor(quality)) .. name
+				elseif profile[value][3] == "spell" then
+					name, _, icon = GetSpellInfo(profile[value][2])
+					name = WHITE..name
+					link = GetSpellLink(profile[value][2])
+				end
+
+				row.Icon:SetTexture(icon)
+				name = name or profile[value][2].." (Macro)"
+				row.Text:SetText(name)
 				row:SetScript("OnClick", function()
 					local removedNumber
 					for num, v in pairs(profile) do
@@ -431,8 +443,11 @@ function MM:DeleteEntryScrollFrameCreate()
 		row:SetNormalFontObject(GameFontHighlightLeft)
 		row.Text = row:CreateFontString("$parentRow"..i.."Text","OVERLAY","GameFontNormal")
 		row.Text:SetSize(190, ROW_HEIGHT)
-		row.Text:SetPoint("LEFT",row)
+		row.Text:SetPoint("LEFT", row, 20, 0)
 		row.Text:SetJustifyH("LEFT")
+		row.Icon = row:CreateTexture(nil, "OVERLAY")
+		row.Icon:SetSize(15,15)
+		row.Icon:SetPoint("LEFT", row)
 		row:SetScript("OnShow", function(button)
 			if GameTooltip:GetOwner() == button:GetName() then
 				ItemTemplate_OnEnter(button)
