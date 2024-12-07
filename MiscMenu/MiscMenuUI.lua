@@ -119,7 +119,8 @@ function MM:DewdropRegister(button, showUnlock, profile)
     if self.dewdrop:IsOpen(button) then self.dewdrop:Close() return end
     self.dewdrop:Register(button,
         'point', function(parent)
-            return "TOP", "BOTTOM"
+            local point1, _, point2 = self:GetTipAnchor(button)
+            return point1, point2
         end,
         'children', function(level, value)
             self.dewdrop:AddLine(
