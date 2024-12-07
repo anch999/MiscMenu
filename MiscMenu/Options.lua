@@ -252,6 +252,15 @@ function MM:CreateOptionsUI()
 							button:SetChecked(self.charDB.actionBars[self:GetSelectedBar()].show)
 						end,
 					},
+					{
+						Type = "Button",
+						Name = "ShowHideAuctionBars",
+						Lable = "Toggle Action Bar Movers",
+						Size = {180,25},
+						OnClick = function()
+							self:ActionBarUnlockFrame()
+						end,
+					},
 				}
 				}
 		}
