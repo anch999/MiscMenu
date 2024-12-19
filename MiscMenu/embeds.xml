@@ -15,7 +15,7 @@
 <Script file="Libs\AceLibrary\AceLibrary.lua"/>
 <Script file="Libs\LibDBIcon-1.0\LibDBIcon-1.0.lua"/>
 <Script file="Libs\Dewdrop-2.0\Dewdrop-2.0.lua"/>
-<Script file="Libs\SettingsCreater-1.0\SettingsCreater.lua"/>
+<Script file="Libs\SettingsCreator-1.0\SettingsCreator.lua"/>
 <Include file="Templates.xml"/>
 
 <Script file="MiscMenu.lua"/>
