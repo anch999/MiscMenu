@@ -1,4 +1,4 @@
-local MAJOR, MINOR = "SettingsCreator-1.0", 7
+local MAJOR, MINOR = "SettingsCreator-1.0", 8
 local SettingsCreator, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not SettingsCreator then return end -- No Upgrade needed.
@@ -40,6 +40,12 @@ local function InitializeDropDown(self)
         end
 	end
 	UIDropDownMenu_SetWidth(frame, opTable.menuWidth or 150)
+end
+
+local function showTooltip(frame, text)
+    GameTooltip:SetOwner(frame, "ANCHOR_TOPLEFT", 0, 20)
+    GameTooltip:AddLine(text)
+    GameTooltip:Show()
 end
 
 --[[ DB = Name of the db you want to setup
@@ -84,10 +90,13 @@ local function CreateCheckButton(options, db, frame, addonName, setPoint, opTabl
     options[opTable.Name].Lable:SetText(opTable.Lable)
     options[opTable.Name]:SetScript("OnClick", opTable.OnClick)
         options[opTable.Name]:SetScript("OnEnter", function()
-        if opTable.Tooltip and type(opTable.Tooltip) == "string" then opTable.Tooltip() end
+        if opTable.Tooltip and type(opTable.Tooltip) == "string" then showTooltip(options[opTable.Name], opTable.Tooltip) end
         if opTable.OnEnter then opTable.OnEnter() end
         end)
-    options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
+    options[opTable.Name]:SetScript("OnLeave", function()
+    if opTable.OnLeave then opTable.OnLeave() end
+    GameTooltip:Hide()
+    end)
     options[opTable.Name]:SetScript("OnShow", function() if opTable.OnShow then opTable.OnShow(options[opTable.Name]) end end)
     options[opTable.Name]:SetChecked(db[opTable.Name] or false)
     return options[opTable.Name]
@@ -100,10 +109,13 @@ local function CreateButton(options, db, frame, addonName, setPoint, opTable)
     options[opTable.Name]:SetText(opTable.Lable)
     options[opTable.Name]:SetScript("OnClick", opTable.OnClick)
         options[opTable.Name]:SetScript("OnEnter", function()
-        if opTable.Tooltip and type(opTable.Tooltip) == "string" then opTable.Tooltip() end
+        if opTable.Tooltip and type(opTable.Tooltip) == "string" then showTooltip(options[opTable.Name], opTable.Tooltip) end
         if opTable.OnEnter then opTable.OnEnter() end
         end)
-    options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
+    options[opTable.Name]:SetScript("OnLeave", function()
+        if opTable.OnLeave then opTable.OnLeave() end
+        GameTooltip:Hide()
+    end)
     return options[opTable.Name]
 end
 
@@ -118,10 +130,13 @@ local function CreateDropDownMenu(options, db, frame, addonName, setPoint, opTab
     options[opTable.Name].Lable:SetText(opTable.Lable)
     options[opTable.Name]:SetScript("OnClick", opTable.OnClick)
     options[opTable.Name]:SetScript("OnEnter", function()
-        if opTable.Tooltip and type(opTable.Tooltip) == "string" then opTable.Tooltip() end
+        if opTable.Tooltip and type(opTable.Tooltip) == "string" then showTooltip(options[opTable.Name], opTable.Tooltip) end
         if opTable.OnEnter then opTable.OnEnter() end
         end)
-    options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
+    options[opTable.Name]:SetScript("OnLeave", function()
+        if opTable.OnLeave then opTable.OnLeave() end
+        GameTooltip:Hide()
+    end)
     options[opTable.Name].Menu = { options, opTable, db }
     options[opTable.Name]:SetScript("OnShow", function() UIDropDownMenu_Initialize(options[opTable.Name], InitializeDropDown) end )
     options[opTable.Name].updateMenu = function() UIDropDownMenu_Initialize(options[opTable.Name], InitializeDropDown) end
@@ -174,10 +189,13 @@ local function CreateInputBox(options, db, frame, addonName, setPoint, opTable)
     options[opTable.Name].Lable:SetPoint("BOTTOMLEFT", options[opTable.Name], "TOPLEFT", 0, 0)
     options[opTable.Name].Lable:SetText(opTable.Lable)
         options[opTable.Name]:SetScript("OnEnter", function()
-        if opTable.Tooltip and type(opTable.Tooltip) == "string" then opTable.Tooltip() end
+        if opTable.Tooltip and type(opTable.Tooltip) == "string" then showTooltip(options[opTable.Name], opTable.Tooltip) end
         if opTable.OnEnter then opTable.OnEnter() end
         end)
-    options[opTable.Name]:SetScript("OnLeave", opTable.OnLeave or GameTooltip:Hide())
+    options[opTable.Name]:SetScript("OnLeave", function()
+        if opTable.OnLeave then opTable.OnLeave() end
+        GameTooltip:Hide()
+    end)
     options[opTable.Name]:SetScript("OnTextChanged", opTable.OnTextChanged)
     options[opTable.Name]:SetScript("OnEnterPressed", opTable.OnEnterPressed)
     return options[opTable.Name]

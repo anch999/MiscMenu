@@ -3,8 +3,7 @@ local CYAN =  "|cff00ffff"
 local LIMEGREEN = "|cFF32CD32"
 --------------- Creates the main misc menu standalone button ---------------
 
-function MM:CreateUI()
-
+function MM:InitializeStandaloneButton()
     self.standaloneButton = CreateFrame("Button", "MiscMenuStandaloneButton", UIParent)
     self.standaloneButton:SetSize(70, 70)
     self.standaloneButton:EnableMouse(true)
@@ -48,30 +47,32 @@ function MM:CreateUI()
         else
             self:OnEnter(button, true)
             self.standaloneButton.Highlight:Show()
-            self:ToggleMainButton()
         end
-
+        if self.db.EnableAutoHide then
+            self.standaloneButton:SetAlpha(10)
+        end
     end)
     self.standaloneButton:SetScript("OnLeave", function()
         GameTooltip:Hide()
         if not self.unlocked then
             self.standaloneButton.Highlight:Hide()
-            self:ToggleMainButton(self.db.EnableAutoHide)
+            if self.db.EnableAutoHide then
+                self.standaloneButton:SetAlpha(0)
+            end
         end
     end)
+    self:SetFramePos(self.standaloneButton, self.charDB.menuSettings.menuPos)
+    self.standaloneButton:SetScale(self.db.buttonScale or 1)
+    self:SetFrameAlpha()
 end
-
-MM:CreateUI()
 
 --------------- Frame functions for misc menu standalone button---------------
 
-function MM:ToggleMainButton(hide)
-    if hide then
-        self.standaloneButton.icon:Hide()
-        self.standaloneButton.Text:Hide()
+function MM:SetFrameAlpha()
+    if self.db.EnableAutoHide then
+        self.standaloneButton:SetAlpha(0)
     else
-        self.standaloneButton.icon:Show()
-        self.standaloneButton.Text:Show()
+        self.standaloneButton:SetAlpha(10)
     end
 end
 
@@ -84,11 +85,17 @@ function MM:UnlockFrame()
         self.standaloneButton.Highlight:Hide()
         self.unlocked = false
         GameTooltip:Hide()
+        if self.db.EnableAutoHide then
+            self.standaloneButton:SetAlpha(0)
+        end
     else
         self.standaloneButton:SetMovable(true)
         self.standaloneButton:RegisterForDrag("LeftButton")
         self.standaloneButton.Highlight:Show()
         self.unlocked = true
+        if self.db.EnableAutoHide then
+            self.standaloneButton:SetAlpha(10)
+        end
     end
 end
 
@@ -99,12 +106,6 @@ function MM:ToggleStandaloneButton()
     else
         self.standaloneButton:Show()
     end
-end
-
-function MM:InitializeStandaloneButton()
-    self:SetFramePos(self.standaloneButton, self.charDB.menuSettings.menuPos)
-    self.standaloneButton:SetScale(self.db.buttonScale or 1)
-    self:ToggleMainButton(self.db.EnableAutoHide)
 end
 
 local worldFrameHook

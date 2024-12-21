@@ -36,8 +36,8 @@ end
 
 function MM:OnEnable()
     self:InitializeMinimap()
-    self:InitializeStandaloneButton()
     self:InitializeActionBars()
+    self:InitializeStandaloneButton()
     self:RegisterEvent("UNIT_SPELLCAST_FAILED")
     self:RegisterEvent("UNIT_SPELLCAST_INTERRUPTED")
     self:RegisterEvent("UNIT_SPELLCAST_SUCCEEDED")

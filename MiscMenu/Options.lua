@@ -51,7 +51,7 @@ function MM:CreateOptionsUI()
 					Lable = "Only Show Standalone Button on Hover",
 					OnClick = function()
 						self.db.EnableAutoHide = not self.db.EnableAutoHide
-						self:ToggleMainButton(self.db.EnableAutoHide)
+						self:SetFrameAlpha()
 					end
 				},
 				{
