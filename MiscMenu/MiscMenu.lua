@@ -8,7 +8,7 @@ MM.defaultIcon = "Interface\\Icons\\INV_Misc_Book_06"
 --Set Savedvariables defaults
 local DefaultSettings  = {
     EnableAutoHide = { false },
-    HideMenu        = { false, HideFrame = "MiscMenuStandaloneButton"},
+    HideMenu        = { false },
     Minimap         = { false },
     TxtSize         = 12,
     AutoMenu        = { false },

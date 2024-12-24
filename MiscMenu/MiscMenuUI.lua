@@ -63,6 +63,9 @@ function MM:InitializeStandaloneButton()
     end)
     self:SetFramePos(self.standaloneButton, self.charDB.menuSettings.menuPos)
     self.standaloneButton:SetScale(self.db.buttonScale or 1)
+    if not self.db.HideMenu then
+        self.standaloneButton:Show()
+    end
     self:SetFrameAlpha()
 end
 
