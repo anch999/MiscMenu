@@ -7,19 +7,19 @@ MM.defaultIcon = "Interface\\Icons\\INV_Misc_Book_06"
 
 --Set Savedvariables defaults
 local DefaultSettings  = {
-    EnableAutoHide = { false },
-    HideMenu        = { false },
-    Minimap         = { false },
+    EnableAutoHide = false,
+    HideMenu        = false,
+    Minimap         = false ,
     TxtSize         = 12,
-    AutoMenu        = { false },
-    DeleteProflie      = { false },
-    menuProfiles    = { { default = {} } },
+    AutoMenu        = false,
+    DeleteProflie      = false,
+    menuProfiles    = { default = {} },
     NumberActionBars = 4,
-    SelfCast = { "none" },
+    SelfCast = "none",
 }
 
 local CharDefaultSettings = {
-    menuSettings = { {currentProfile = "default"} },
+    menuSettings = {currentProfile = "default"},
     syncBarPosition = true
 }
 
