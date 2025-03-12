@@ -267,7 +267,7 @@ function MM:CreateOptionsUI()
 	self.options = self:CreateOptionsPages(Options, MiscMenuDB)
 	------------------------------ Profile Settings Panel ------------------------------
 	self.options.addButton = CreateFrame("Button", "MiscMenuOptionsAddButton", MiscMenuOptionsFrame2, "ItemButtonTemplate")
-	self.options.addButton:SetPoint("TOPLEFT", 280, -113)
+	self.options.addButton:SetPoint("TOPLEFT", 280, -150)
 	self.options.addButton.Lable = self.options.addButton:CreateFontString(nil , "BORDER", "GameFontNormal")
 	self.options.addButton.Lable:SetJustifyH("LEFT")
 	self.options.addButton.Lable:SetPoint("LEFT", self.options.addButton, 0, 37)
@@ -381,7 +381,7 @@ function MM:DeleteEntryScrollFrameCreate()
 	self.deleteEntryScrollFrame = CreateFrame("Frame", "", MiscMenuOptionsFrame2)
 		self.deleteEntryScrollFrame:EnableMouse(true)
 		self.deleteEntryScrollFrame:SetSize(230, ROW_HEIGHT * MAX_ROWS + 16)
-		self.deleteEntryScrollFrame:SetPoint("TOPLEFT", 30, -112)
+		self.deleteEntryScrollFrame:SetPoint("TOPLEFT", 30, -150)
 		self.deleteEntryScrollFrame:SetBackdrop({
 			bgFile = "Interface\\DialogFrame\\UI-DialogBox-Background", tile = true, tileSize = 16,
 			edgeFile = "Interface\\Tooltips\\UI-Tooltip-Border", edgeSize = 16,
