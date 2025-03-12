@@ -3,16 +3,15 @@ local CYAN =  "|cff00ffff"
 local LIMEGREEN = "|cFF32CD32"
 --------------- Creates the main misc menu standalone button ---------------
 
-function MM:CreateUI()
-
+function MM:InitializeStandaloneButton()
     self.standaloneButton = CreateFrame("Button", "MiscMenuStandaloneButton", UIParent)
     self.standaloneButton:SetSize(70, 70)
     self.standaloneButton:EnableMouse(true)
     self.standaloneButton:SetScript("OnDragStart", function() self.standaloneButton:StartMoving() end)
     self.standaloneButton:SetScript("OnDragStop", function()
         self.standaloneButton:StopMovingOrSizing()
-        self.charDB.menuPos = { self.standaloneButton:GetPoint() }
-        self.charDB.menuPos[2] = "UIParent"
+        self.charDB.menuSettings.menuPos = { self.standaloneButton:GetPoint() }
+        self.charDB.menuSettings.menuPos[2] = "UIParent"
     end)
     self.standaloneButton:RegisterForClicks("LeftButtonDown", "RightButtonDown")
     self.standaloneButton.icon = self.standaloneButton:CreateTexture(nil, "ARTWORK")
@@ -48,41 +47,35 @@ function MM:CreateUI()
         else
             self:OnEnter(button, true)
             self.standaloneButton.Highlight:Show()
-            self:ToggleMainButton()
         end
-
+        if self.db.EnableAutoHide and not UnitAffectingCombat("player") then
+            self.standaloneButton:SetAlpha(10)
+        end
     end)
     self.standaloneButton:SetScript("OnLeave", function()
         GameTooltip:Hide()
         if not self.unlocked then
             self.standaloneButton.Highlight:Hide()
-            self:ToggleMainButton(self.db.enableAutoHide)
+            if self.db.EnableAutoHide then
+                self.standaloneButton:SetAlpha(0)
+            end
         end
     end)
+    self:SetFramePos(self.standaloneButton, self.charDB.menuSettings.menuPos)
+    self.standaloneButton:SetScale(self.db.buttonScale or 1)
+    if not self.db.HideMenu then
+        self.standaloneButton:Show()
+    end
+    self:SetFrameAlpha()
 end
-
-MM:CreateUI()
 
 --------------- Frame functions for misc menu standalone button---------------
 
-function MM:SetMenuPos()
-    if self.charDB.menuPos then
-        local pos = self.charDB.menuPos
-        self.standaloneButton:ClearAllPoints()
-        self.standaloneButton:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
+function MM:SetFrameAlpha()
+    if self.db.EnableAutoHide then
+        self.standaloneButton:SetAlpha(0)
     else
-        self.standaloneButton:ClearAllPoints()
-        self.standaloneButton:SetPoint("CENTER", UIParent)
-    end
-end
-
-function MM:ToggleMainButton(hide)
-    if hide then
-        self.standaloneButton.icon:Hide()
-        self.standaloneButton.Text:Hide()
-    else
-        self.standaloneButton.icon:Show()
-        self.standaloneButton.Text:Show()
+        self.standaloneButton:SetAlpha(10)
     end
 end
 
@@ -95,11 +88,17 @@ function MM:UnlockFrame()
         self.standaloneButton.Highlight:Hide()
         self.unlocked = false
         GameTooltip:Hide()
+        if self.db.EnableAutoHide then
+            self.standaloneButton:SetAlpha(0)
+        end
     else
         self.standaloneButton:SetMovable(true)
         self.standaloneButton:RegisterForDrag("LeftButton")
         self.standaloneButton.Highlight:Show()
         self.unlocked = true
+        if self.db.EnableAutoHide then
+            self.standaloneButton:SetAlpha(10)
+        end
     end
 end
 
@@ -115,7 +114,7 @@ end
 local worldFrameHook
 --sets up the drop down menu for any menus
 function MM:DewdropRegister(button, showUnlock, profile)
-    profile = profile or self.charDB.currentProfile
+    profile = profile or self.charDB.menuSettings.currentProfile
     if self.dewdrop:IsOpen(button) then self.dewdrop:Close() return end
     self.dewdrop:Register(button,
         'point', function(parent)
@@ -125,12 +124,12 @@ function MM:DewdropRegister(button, showUnlock, profile)
         'children', function(level, value)
             self.dewdrop:AddLine(
                 'text', "|cffffff00MiscMenu",
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
+                'textHeight', self.db.TxtSize,
+                'textWidth', self.db.TxtSize,
                 'isTitle', true,
                 'notCheckable', true
             )
-            local setProfile = self.db.profileLists[profile]
+            local setProfile = self.db.menuProfiles[profile]
             local sortProfile = {}
             if setProfile then
                 for _, v in ipairs(setProfile) do
@@ -138,9 +137,9 @@ function MM:DewdropRegister(button, showUnlock, profile)
                 end
                 for i = 1, #setProfile do
                     if self.reorderMenu then
-                        MM:ChangeEntryOrder(sortProfile[i][1], sortProfile[i][2], i, setProfile)
+                        self:ChangeEntryOrder(sortProfile[i][1], sortProfile[i][2], i, setProfile)
                     else
-                        MM:AddEntry(sortProfile[i][1], sortProfile[i][2])
+                        self:AddEntry(sortProfile[i][1], sortProfile[i][2])
                     end
                 end
             end
@@ -148,16 +147,24 @@ function MM:DewdropRegister(button, showUnlock, profile)
             local text = self.reorderMenu and LIMEGREEN.."Reorder" or "Reorder"
             self.dewdrop:AddLine(
                     'text', text,
-                    'textHeight', self.db.txtSize,
-                    'textWidth', self.db.txtSize,
+                    'textHeight', self.db.TxtSize,
+                    'textWidth', self.db.TxtSize,
                     'func', function() self.reorderMenu = not self.reorderMenu end,
                     'notCheckable', true
+                )
+            self.dewdrop:AddLine(
+                    'text', "Unlock Action Bar Frame",
+                    'textHeight', self.db.TxtSize,
+                    'textWidth', self.db.TxtSize,
+                    'func', self.ActionBarUnlockFrame,
+                    'notCheckable', true,
+                    'closeWhenClicked', true
                 )
             if showUnlock then
                 self.dewdrop:AddLine(
                     'text', "Unlock Frame",
-                    'textHeight', self.db.txtSize,
-                    'textWidth', self.db.txtSize,
+                    'textHeight', self.db.TxtSize,
+                    'textWidth', self.db.TxtSize,
                     'func', self.UnlockFrame,
                     'notCheckable', true,
                     'closeWhenClicked', true
@@ -165,8 +172,8 @@ function MM:DewdropRegister(button, showUnlock, profile)
             end
             self.dewdrop:AddLine(
 				'text', "Options",
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
+                'textHeight', self.db.TxtSize,
+                'textWidth', self.db.TxtSize,
 				'func', self.OptionsToggle,
                 'funcRight', function() self:OptionsToggle(true) end,
 				'notCheckable', true,
@@ -177,8 +184,8 @@ function MM:DewdropRegister(button, showUnlock, profile)
                 'textR', 0,
                 'textG', 1,
                 'textB', 1,
-                'textHeight', self.db.txtSize,
-                'textWidth', self.db.txtSize,
+                'textHeight', self.db.TxtSize,
+                'textWidth', self.db.TxtSize,
 				'closeWhenClicked', true,
 				'notCheckable', true
 			)
@@ -197,106 +204,4 @@ function MM:DewdropRegister(button, showUnlock, profile)
     end
 
     GameTooltip:Hide()
-end
-
---------------- Creates summon random pet button ---------------
-local petButtonCreated
-function MM:CreateRandomPetButton()
-    if petButtonCreated then return end
-     --Creates the randomPet button
-     self.randomPet = CreateFrame("Button", "MiscMenuRandomPet", UIParent, "SecureActionButtonTemplate")
-     self.randomPet:SetSize(70, 70)
-     self.randomPet:EnableMouse(true)
-     self.randomPet:Hide()
-     self.randomPet:SetScript("OnDragStart", function() self.randomPet:StartMoving() end)
-     self.randomPet:SetScript("OnDragStop", function()
-         self.randomPet:StopMovingOrSizing()
-         self.charDB.randomPetPos = { self.randomPet:GetPoint() }
-         self.charDB.randomPetPos[2] = "UIParent"
-     end)
-     self.randomPet.icon = self.randomPet:CreateTexture(nil, "ARTWORK")
-     self.randomPet.icon:SetSize(55, 55)
-     self.randomPet.icon:SetPoint("CENTER", self.randomPet, "CENTER", 0, 0)
-     self.randomPet.Text = self.randomPet:CreateFontString()
-     self.randomPet.Text:SetFont("Fonts\\FRIZQT__.TTF", 13)
-     self.randomPet.Text:SetFontObject(GameFontNormal)
-     self.randomPet.Text:SetText("|cffffffffRandom\nPet")
-     self.randomPet.Text:SetPoint("CENTER", self.randomPet.icon, "CENTER", 0, 0)
-     self.randomPet.Highlight = self.randomPet:CreateTexture(nil, "OVERLAY")
-     self.randomPet.Highlight:SetSize(70, 70)
-     self.randomPet.Highlight:SetPoint("CENTER", self.randomPet, 0, 0)
-     self.randomPet.Highlight:SetTexture("Interface\\AddOns\\AwAddons\\Textures\\EnchOverhaul\\Slot2Selected")
-     self.randomPet.Highlight:Hide()
-     self.randomPet:SetScript("OnMouseDown", function(button, btnclick)
-         if btnclick == "RightButton" then
-             if self.randomPet.unlocked then
-                 self:UnlockRandomPet()
-             end
-         end
-     end)
-     self.randomPet:SetScript("OnEnter", function(button)
-         self.randomPet.Highlight:Show()
-         if self.randomPet.unlocked then
-             self.randomPet.spell = nil
-             GameTooltip:SetOwner(button, "ANCHOR_TOP")
-             GameTooltip:AddLine("Left click to drag")
-             GameTooltip:AddLine("Right click to lock frame")
-             GameTooltip:Show()
-         else
-             local spell, icon = select(3, GetCompanionInfo("CRITTER", math.random(1, GetNumCompanions("CRITTER"))))
-             self.randomPet.icon:SetTexture(icon)
-             self.randomPet:SetAttribute("type1", "spell")
-             self.randomPet:SetAttribute("spell", GetSpellInfo(spell))
-             GameTooltip:SetOwner(button, "ANCHOR_TOP")
-             GameTooltip:AddLine("Summons Random Pet")
-             GameTooltip:Show()
-         end
- 
-     end)
-     self.randomPet:SetScript("OnLeave", function()
-         GameTooltip:Hide()
-         if not self.randomPet.unlocked then
-             self.randomPet.Highlight:Hide()
-         end
-     end)
-     
-     if self.charDB.randomPetPos then
-        local pos = self.charDB.randomPetPos
-        self.randomPet:ClearAllPoints()
-        self.randomPet:SetPoint(pos[1], pos[2], pos[3], pos[4], pos[5])
-    else
-        self.randomPet:ClearAllPoints()
-        self.randomPet:SetPoint("CENTER", UIParent)
-    end
-
-     petButtonCreated = true
-end
-
---------------- Functions for random pet button ---------------
-
-function MM:ToggleRandomPet()
-    MM:CreateRandomPetButton()
-    if self.db.hideRandomPet then
-        self.randomPet:Hide()
-    else
-        self.randomPet.icon:SetTexture(select(4, GetCompanionInfo("CRITTER", math.random(1, GetNumCompanions("CRITTER")))))
-        self.randomPet:Show()
-    end
-end
-
--- Used to show highlight as a frame mover
-function MM:UnlockRandomPet()
-    self = MM
-    if self.randomPet.unlocked then
-        self.randomPet:SetMovable(false)
-        self.randomPet:RegisterForDrag()
-        self.randomPet.Highlight:Hide()
-        self.randomPet.unlocked = false
-        GameTooltip:Hide()
-    else
-        self.randomPet:SetMovable(true)
-        self.randomPet:RegisterForDrag("LeftButton")
-        self.randomPet.Highlight:Show()
-        self.randomPet.unlocked = true
-    end
 end

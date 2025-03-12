@@ -7,6 +7,7 @@
 ## X-Category: UnitFrame
 ## X-OptionsFrame: MiscMenuOptionsFrame
 ## DefaultState: enabled
-## Version: 1.2.2
-
+## Version: 1.2.3
+## X-Discord: https://discord.gg/CJpk2ujfJ5
+## X-Github-Repository: https://github.com/anch999/MiscMenu
 embeds.xml
