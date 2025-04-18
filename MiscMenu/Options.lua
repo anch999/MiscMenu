@@ -141,6 +141,7 @@ function MM:CreateOptionsUI()
 					for name, _ in pairs(self.db.menuProfiles) do
 						tinsert(selections, name)
 					end
+					self:DeleteEntryScrollFrameUpdate()
 					return selections, self.charDB.menuSettings.currentProfile
 				end,
 				Func = function(selection)
