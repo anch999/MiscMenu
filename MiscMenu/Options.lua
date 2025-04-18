@@ -266,7 +266,7 @@ function MM:CreateOptionsUI()
 		}
 	self.options = self:CreateOptionsPages(Options, MiscMenuDB)
 	------------------------------ Profile Settings Panel ------------------------------
-	self.options.addButton = CreateFrame("Button", "MiscMenuOptionsAddButton", MiscMenuOptionsFrame2, "ItemButtonTemplate")
+	self.options.addButton = CreateFrame("Button", "MiscMenuOptionsAddButton", MiscMenuOptionsFrame_2, "ItemButtonTemplate")
 	self.options.addButton:SetPoint("TOPLEFT", 280, -150)
 	self.options.addButton.Lable = self.options.addButton:CreateFontString(nil , "BORDER", "GameFontNormal")
 	self.options.addButton.Lable:SetJustifyH("LEFT")
