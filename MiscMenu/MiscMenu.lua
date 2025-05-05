@@ -102,9 +102,10 @@ msg - takes the argument for the /miscmenu command so that the appropriate actio
 If someone types /miscmenu, bring up the options box
 ]]
 function MM:SlashCommand(msg)
-    local cmd, arg = string.split(" ", msg, 3)
+    local cmd, arg, arg2 = string.split(" ", msg, 4)
 	cmd = string.lower(cmd) or nil
 	arg = arg or nil
+    arg2 = arg2 or nil
     if cmd == "reset" then
         MiscMenuDB = nil
         self:OnInitialize()
@@ -112,9 +113,7 @@ function MM:SlashCommand(msg)
     elseif cmd == "options" then
         self:OptionsToggle()
     elseif cmd == "macromenu" then
-        self:DewdropRegister(GetMouseFocus(), nil, arg)
-    elseif cmd == "macromenuright" then
-        self:MacroMenuClick(arg)
+        self:MacroMenuClick(arg, arg2)
     elseif cmd == "unlockactionbar" then
         self:ActionBarUnlockFrame()
     else
@@ -122,18 +121,23 @@ function MM:SlashCommand(msg)
     end
 end
 
-function MM:MacroMenuClick(arg)
+function MM:MacroMenuClick(arg, arg2)
     local button = GetMouseFocus()
     button.miscmenu = button.miscmenu or {}
-    button.miscmenu.Profile =  arg
+    button.miscmenu.Profile = arg
+    button.miscmenu.Profile2 = arg2
     if not button.miscmenu.Function then
     button.miscmenu.Function = function(btn, btnclick)
-        if button.miscmenu.Profile and btnclick == "RightButton" then
+        print(btnclick)
+        if arg2 and button.miscmenu.Profile and btnclick == "RightButton" then
+            self:DewdropRegister(button, nil, button.miscmenu.Profile2)
+        elseif arg and button.miscmenu.Profile2 and btnclick == "LeftButton" then
             self:DewdropRegister(button, nil, button.miscmenu.Profile)
         end
         button.miscmenu.Profile = nil
+        button.miscmenu.Profile2 = nil
     end
     button:HookScript("OnClick", button.miscmenu.Function)
-    button.miscmenu.Function(nil, "RightButton")
+    button.miscmenu.Function(nil)
     end
 end
