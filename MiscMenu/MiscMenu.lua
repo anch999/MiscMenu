@@ -128,7 +128,6 @@ function MM:MacroMenuClick(arg, arg2)
     button.miscmenu.Profile2 = arg2
     if not button.miscmenu.Function then
     button.miscmenu.Function = function(btn, btnclick)
-        print(btnclick)
         if arg2 and button.miscmenu.Profile and btnclick == "RightButton" then
             self:DewdropRegister(button, nil, button.miscmenu.Profile2)
         elseif arg and button.miscmenu.Profile2 and btnclick == "LeftButton" then
