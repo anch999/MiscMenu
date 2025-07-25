@@ -127,16 +127,16 @@ function MM:MacroMenuClick(arg, arg2)
     button.miscmenu.Profile = arg
     button.miscmenu.Profile2 = arg2
     if not button.miscmenu.Function then
-    button.miscmenu.Function = function(btn, btnclick)
-        if arg2 and button.miscmenu.Profile and btnclick == "RightButton" then
-            self:DewdropRegister(button, nil, button.miscmenu.Profile2)
-        elseif arg and button.miscmenu.Profile2 and btnclick == "LeftButton" then
-            self:DewdropRegister(button, nil, button.miscmenu.Profile)
+        button.miscmenu.Function = function(btn, btnclick)
+            if arg2 and button.miscmenu.Profile and btnclick == "RightButton" then
+                self:DewdropRegister(button, nil, button.miscmenu.Profile2)
+            elseif arg and button.miscmenu.Profile2 and btnclick == "LeftButton" then
+                self:DewdropRegister(button, nil, button.miscmenu.Profile)
+            end
+            button.miscmenu.Profile = nil
+            button.miscmenu.Profile2 = nil
         end
-        button.miscmenu.Profile = nil
-        button.miscmenu.Profile2 = nil
-    end
-    button:HookScript("OnClick", button.miscmenu.Function)
-    button.miscmenu.Function(nil)
+        button:HookScript("OnClick", button.miscmenu.Function)
+        button.miscmenu.Function(nil)
     end
 end
