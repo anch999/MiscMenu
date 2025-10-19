@@ -1,10 +1,5 @@
 local MM = LibStub("AceAddon-3.0"):GetAddon("MiscMenu")
 local WHITE = "|cffFFFFFF"
---Round number
-local function round(num, idp)
-	local mult = 10 ^ (idp or 0)
-	return math.floor(num * mult + 0.5) / mult
- end
 
 function MM:OptionsToggle(otherMenu)
     if InterfaceOptionsFrame:IsVisible() then
