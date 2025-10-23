@@ -1,4 +1,8 @@
+<<<<<<< Updated upstream
 local MAJOR, MINOR = "SettingsCreator-1.0", 12
+=======
+local MAJOR, MINOR = "SettingsCreator-1.0", 13
+>>>>>>> Stashed changes
 local SettingsCreator, oldminor = LibStub:NewLibrary(MAJOR, MINOR)
 
 if not SettingsCreator then return end -- No Upgrade needed.
