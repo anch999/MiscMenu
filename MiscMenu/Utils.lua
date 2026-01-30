@@ -280,10 +280,7 @@ function MM:GetItemInfo(item)
 	local itemDescription
 	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item.itemID)
 	if not item:GetInfo() then
-		self:ItemsLoading(1)
-		item:ContinueOnLoad(function()
-			self:ItemsLoading(-1)
-		end)
+		item:ContinueOnLoad()
 	end
 		local itemInstant = GetItemInfoInstant(item.itemID)
 		if itemInstant then
