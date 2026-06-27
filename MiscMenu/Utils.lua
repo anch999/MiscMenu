@@ -132,7 +132,7 @@ function MM:AddEntry(ID, infoType, macroTxt)
             'secure', secure,
             'func', function()
                 if infoType == "item" and not self:HasItem(ID) then
-                    RequestDeliverVanityCollectionItem(ID)
+                    self:DeliverVanityItem(ID)
                 else
                     if infoType == "item" and self.db.AutoDeleteItems then
                         self.deleteItem = ID
@@ -294,4 +294,20 @@ function MM:GetItemInfo(item)
 			itemDescription = itemDescription or itemInstant.description
 		end
 	return itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice, itemDescription
+end
+
+function MM:DeliverVanityItem(id)
+    C_VanityCollection.RequestDelivery(C_VanityCollection.GetItemByLearnedSpell(id) or id)
+end
+
+function MM:HasVanity(id)
+  return C_VanityCollection.IsCollectionItemOwned(self:GetVanityLearnedSpell(id) or id)
+end
+
+function MM:GetVanityLearnedSpell(id)
+    local learnedSpell = C_VanityCollection.GetItemByLearnedSpell(id) or id
+    if type(learnedSpell) == "table" then
+        learnedSpell = id
+    end
+    return learnedSpell
 end

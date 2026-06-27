@@ -122,27 +122,27 @@ end
 
 function MM:ActionButtonOnClick(bar, button)
     if button:IsEnabled() == 0 then return end
-    local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBars[bar].profile][button.ID])
+    local infoType, id = unpack(self.db.actionBarProfiles[self.charDB.actionBars[bar].profile][button.ID])
     self.activeButtonID = button
     self.spellCastStarted = nil
     --self.barUpdateTimer = self:ScheduleTimer("ActionBarClearButtonCheck", .5)
     self.barUpdateTimer.button = button
     if  infoType == "item" then
-        local start = GetItemCooldown(ID)
-        if start == 0 and not self:HasItem(ID) and C_VanityCollection.IsCollectionItemOwned(ID) then
-           RequestDeliverVanityCollectionItem(VANITY_SPELL_REFERENCE[ID] or ID)
-           Timer.After(.2, function() button:SetChecked(false) end)
+        local start = GetItemCooldown(id)
+        if start == 0 and not self:HasItem(id) and self:HasVanity(id) then
+            self:DeliverVanityItem(id)
+            Timer.After(.2, function() button:SetChecked(false) end)
         else
-            self.deleteItem = ID
+            self.deleteItem = id
         end
     elseif infoType == "spell" then
-        if not CA_IsSpellKnown(ID) and C_VanityCollection.IsCollectionItemOwned(VANITY_SPELL_REFERENCE[ID] or ID) then
-            RequestDeliverVanityCollectionItem(VANITY_SPELL_REFERENCE[ID] or ID)
+        if not CA_IsSpellKnown(id) and self:HasVanity(id) then
+            self:DeliverVanityItem(id)
             Timer.After(.2, function() button:SetChecked(false) end)
         end
     end
 
-    Timer.After(.5, function() MM:SetButtonTimer(infoType, button, ID) end)
+    Timer.After(.5, function() MM:SetButtonTimer(infoType, button, id) end)
     self:PlaceAction(button, bar)
 end
 
