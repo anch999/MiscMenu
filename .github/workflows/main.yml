@@ -1,5 +1,4 @@
 name: Release WoW Addon
-
 on:
   push:
     branches:
@@ -12,16 +11,17 @@ on:
         type: string
 
 env:
-  ADDON_NAME: MiscMenu   # 👈 change this for each addon repo (folder + toc base name)
+  ADDON_NAME: MiscMenu # 👈 change this for each addon repo (folder + toc base name)
 
 jobs:
   release:
     name: Create Release if New Version
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Ensures git tags can be checked properly
 
       - name: Determine TOC file path
         id: find_toc
@@ -44,14 +44,11 @@ jobs:
           else
             version="$version_line"
           fi
-
           if [ -z "$version" ]; then
             echo "❌ No version found in TOC file or input. Exiting."
             exit 1
           fi
-
           echo "VERSION=$version" >> $GITHUB_ENV
-          echo "::set-output name=version::$version"
           echo "Detected version: $version"
 
       - name: Check if tag exists
@@ -82,14 +79,11 @@ jobs:
         run: |
           zip_name="${ADDON_NAME}-${VERSION}.zip"
           echo "Preparing zip for $ADDON_NAME -> $zip_name"
-          
           # Copy only the addon folder and exclude metadata
           rsync -av --exclude='.git' --exclude='.github' --exclude='*.zip' "${ADDON_NAME}" "./temp_build/"
-          
           cd ./temp_build
           zip -r "../${zip_name}" "${ADDON_NAME}"
           cd ..
-          
           echo "ZIP_NAME=${zip_name}" >> $GITHUB_ENV
           echo "✅ Created ${zip_name}"
 
@@ -98,5 +92,4 @@ jobs:
         with:
           tag_name: v${{ env.VERSION }}
           name: ${{ env.ADDON_NAME }} ${{ env.VERSION }}
-          files: |
-            ${{ env.ZIP_NAME }}
+          files: ${{ env.ZIP_NAME }}
