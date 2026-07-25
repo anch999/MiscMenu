@@ -212,7 +212,8 @@ end
 
 function MM:SetAttribute(button, bar)
     local infoType, ID = unpack(self.db.actionBarProfiles[self.charDB.actionBars[bar].profile][button.ID])
-    local name, icon, itemLink, text, start, duration, enable
+    local icon, itemLink, text, start, duration, enable
+    local name = ""
     if not ID then
         button.Name:SetText()
         button.Icon:SetTexture()
@@ -234,6 +235,7 @@ function MM:SetAttribute(button, bar)
         name, icon = GetMacroInfo(ID)
         text = name
     end
+    if not name then return end
     if start then
         CooldownFrame_SetTimer(button.Cooldown, start, duration, enable)
     end
@@ -268,8 +270,8 @@ function MM:SetAttribute(button, bar)
     self:ActionBarBagUpdate()
 
     if InterfaceOptionsFrame:IsVisible() then
-        self.options.NumberOfActionbarButtons.UpdateSlider(self:GetNumberButtons(self:GetSelectedBar()))
-        self.options.NumberOfActionbarRows.UpdateSlider(self:GetNumberRows(self:GetSelectedBar()))
+        self.options.NumberOfActionbarButtons:SetValue(self:GetNumberButtons(self:GetSelectedBar()))
+        self.options.NumberOfActionbarRows:SetValue(self:GetNumberRows(self:GetSelectedBar()))
     end
 end
 

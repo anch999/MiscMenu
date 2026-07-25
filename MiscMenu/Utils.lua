@@ -279,20 +279,17 @@ function MM:GetItemInfo(item)
 	item = tonumber(item) and Item:CreateFromID(item) or Item:CreateFromLink(item)
 	local itemDescription
 	local itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice = GetItemInfo(item.itemID)
-	if not item:GetInfo() then
-		item:ContinueOnLoad()
+	local itemInstant = GetItemInfoInstant(item.itemID)
+	if itemInstant then
+		itemName = itemName or itemInstant.name
+		itemSubType = itemSubType or _G["ITEM_SUBCLASS_"..itemInstant.classID.."_"..itemInstant.subclassID]
+		itemEquipLoc = itemEquipLoc or itemEquipLocConversion[itemInstant.inventoryType]
+		itemTexture = itemTexture or itemInstant.icon
+		itemQuality = itemQuality or itemInstant.quality
+		itemLink = itemLink or item:GetLink()
+		itemLevel = itemLevel or item.itemLevel
+		itemDescription = itemDescription or itemInstant.description
 	end
-		local itemInstant = GetItemInfoInstant(item.itemID)
-		if itemInstant then
-			itemName = itemName or itemInstant.name
-			itemSubType = itemSubType or _G["ITEM_SUBCLASS_"..itemInstant.classID.."_"..itemInstant.subclassID]
-			itemEquipLoc = itemEquipLoc or itemEquipLocConversion[itemInstant.inventoryType]
-			itemTexture = itemTexture or itemInstant.icon
-			itemQuality = itemQuality or itemInstant.quality
-			itemLink = itemLink or item:GetLink()
-			itemLevel = itemLevel or item.itemLevel
-			itemDescription = itemDescription or itemInstant.description
-		end
 	return itemName, itemLink, itemQuality, itemLevel, itemMinLevel, itemType, itemSubType, itemStackCount, itemEquipLoc, itemTexture, itemSellPrice, itemDescription
 end
 
